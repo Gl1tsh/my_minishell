@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 11:57:44 by tomuller          #+#    #+#             */
-/*   Updated: 2024/01/20 15:57:42 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/23 17:19:46 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@
 # include <fcntl.h>
 # include <limits.h>
 # include <pthread.h>
-# include <readline/history.h>
-# include <readline/readline.h>
 # include <stdarg.h>
 # include <stdbool.h>
 # include <stdio.h>
@@ -26,6 +24,8 @@
 # include <string.h>
 # include <sys/time.h>
 # include <unistd.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 
 typedef struct s_cmd	s_cmd;
 

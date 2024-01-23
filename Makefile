@@ -11,8 +11,8 @@ BUILDDIR = build/
 
 LIBFT = libft/libft.a
 
-SRCS = $(wildcard srcs/*.c)
-OBJS = $(patsubst srcs/%.c,$(BUILDDIR)%.o,$(SRCS))
+SRCS = $(wildcard src/*.c)
+OBJS = $(patsubst src/%.c,$(BUILDDIR)%.o,$(SRCS))
 INCLUDES = -I./include -I./libft
 
 # Total number of source files
@@ -37,13 +37,13 @@ all: $(NAME)
 $(LIBFT):
 	@make -C libft
 
-$(BUILDDIR)%.o: srcs/%.c
+$(BUILDDIR)%.o: src/%.c
 	@mkdir -p $(BUILDDIR)
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 	@$(call update_progress)
 
 $(NAME): $(LIBFT) $(OBJS) 
-	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME) $(LDFLAGS)
+	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME) $(LDFLAGS)
 
 clean:
 	@make -C libft clean

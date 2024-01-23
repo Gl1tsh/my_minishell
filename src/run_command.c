@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:10:53 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/23 16:49:56 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/23 17:23:15 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, char **env)
 	}
 	if (cmds->builtin != NULL)
 	{
-		cmds->builtin(cmds);
+		cmds->builtin(cmds, in_fd, fd[1], env);
 	}
 	else
 	{

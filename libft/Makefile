@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: nagiorgi <nagiorgi@student.42.fr>          +#+  +:+       +#+         #
+#    By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/03 19:39:17 by nagiorgi          #+#    #+#              #
-#    Updated: 2023/10/26 14:38:58 by nagiorgi         ###   ########.fr        #
+#    Updated: 2024/01/23 17:17:30 by nagiorgi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -79,22 +79,22 @@ ARC = ar rcs
 
 # Règle de compilation des fichiers source en fichiers objets
 .c.o:
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 # Règle par défaut pour construire la bibliothèque
 $(NAME): $(OBJS)
-	${ARC} $(NAME) $^
+	@${ARC} $(NAME) $^
 
 all:	$(NAME)
 
 clean:
-	${CLEAN} ${OBJS}
+	@${CLEAN} ${OBJS}
 
 fclean:	clean
-	${CLEAN} ${NAME}
+	@${CLEAN} ${NAME}
 
 re:	fclean	all
 
 bonus:		${OBJB}
-	${ARC} ${NAME} ${OBJB}
+	@${ARC} ${NAME} ${OBJB}
 	@echo "Bonus added."
