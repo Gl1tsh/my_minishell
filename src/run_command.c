@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:10:53 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/24 15:56:48 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/24 16:28:39 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, char **env)
 	int	pid;
 	int	status;
 
-	fprintf(stderr, "exec_pipeline: running %s\n", cmds->cmd);
+	fprintf(stderr, "exec_pipeline: running\n");
 	if (cmds->next == NULL)
 	{
 		fd[0] = -1;
