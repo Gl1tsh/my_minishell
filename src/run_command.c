@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <stdio.h>
 
 /******************************************************************************
 *                                                                             *
@@ -25,9 +26,30 @@
 *                                                                             *
 ******************************************************************************/
 
+char	**copy_args(t_alist *arg_list)
+{
+	char	**args;
+	int		arg_count;
+	t_arg	*current_arg;
+	int		i;
+
+	arg_count = alist_size(arg_list);
+	args = malloc((arg_count + 1) * sizeof(char *));
+	i = 0;
+	current_arg = (t_arg *)alist_get_head(arg_list);
+	while (current_arg)
+	{
+		args[i++] = current_arg->string.bytes;
+		current_arg = (t_arg *)alist_get_succ((t_anode *)current_arg);
+	}
+	args[i] = NULL;
+	return args;
+}
+
 void	exec(t_cmd *cmd, char **env)
 {
-	execve(cmd->path, cmd->args, env);
+	cmd->path = ((t_arg *)alist_get_head(&cmd->args))->string.bytes;
+	execve(cmd->path, copy_args(&cmd->args), env);
 	write(STDERR_FILENO, "exec : command not found\n", 20);
 	exit(127);
 }
@@ -64,8 +86,8 @@ int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, char **env)
 	int	pid;
 	int	status;
 
-	fprintf(stderr, "exec_pipeline: running %s\n", cmds->cmd);
-	if (cmds->next == NULL)
+	fprintf(stderr, "%d > exec_pipeline: running %s\n", getpid(), cmds->path);
+	if (alist_get_succ((t_anode *)cmds) == NULL)
 	{
 		fd[0] = -1;
 		fd[1] = out_fd;
@@ -77,7 +99,7 @@ int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, char **env)
 	}
 	if (cmds->builtin != NULL)
 	{
-		cmds->builtin(cmds, in_fd, fd[1], env);
+		cmds->builtin(&cmds->args, in_fd, fd[1], env);
 	}
 	else
 	{
@@ -94,24 +116,25 @@ int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, char **env)
 	}
 	safe_close(fd[1]);
 	safe_close(in_fd);
-	if (cmds->next != NULL)
-		return exec_pipeline(cmds->next, fd[0], out_fd, env);
+	if (alist_get_succ((t_anode *)cmds) != NULL)
+		return exec_pipeline((t_cmd *)alist_get_succ((t_anode *)cmds), fd[0], out_fd, env);
 	waitpid(pid, &status, 0);
 	return 0;
 }
 
-void    run_commands(t_cmd *commands, char **env)
+int	run_commands(t_alist *commands, char **env)
 {
     // Run a pre-flight converting `command` to its path and calling `access`
     // (what to do when one of the command in the pipeline is an builtin?)
 	signal(SIGINT, &cmd_signal_handler);
 	signal(SIGQUIT, &cmd_signal_handler);
 	fprintf(stderr, "run_commands: before\n");
-    int error = exec_pipeline(commands, STDIN_FILENO, STDOUT_FILENO, env);
+    int error = exec_pipeline((t_cmd *)alist_get_head(commands), STDIN_FILENO, STDOUT_FILENO, env);
 	if (error > 100)
 	{
 		fprintf(stderr, "run_commands: piping failed %d\n", error);
 		perror(NULL);
 	}
     fprintf(stderr, "run_commands: after\n");
+	return 0;
 }

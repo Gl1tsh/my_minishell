@@ -11,6 +11,40 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <stdio.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+
+int	process(char *input, char **env)
+{
+	t_alist	commands;
+	int		retval;
+
+	alist_new_list(&commands);
+	retval = parse_commands(&commands, input);
+	if (retval)
+		return (free_commands(&commands, retval));
+
+	/*
+	retval = extract_redirections(&commands);
+	if (retval)
+		return (free_commands(&commands, retval));
+	retval = process_heredoc(&commands);
+	if (retval)
+		return (free_commands(&commands, retval));
+	retval = setup_path_or_builtin(&commands);
+	if (retval)
+		return (free_commands(&commands, retval));
+	*/
+
+	retval = run_commands(&commands, env);
+	return (free_commands(&commands, retval));
+}
+
+void	set_retval(int retval)
+{
+	(void)retval;
+}
 
 int	main(int argc, char **argv, char **env)
 {
@@ -28,9 +62,10 @@ int	main(int argc, char **argv, char **env)
 		if (*input)
 		{
 			add_history(input);
-			parsing(input, env);
+			set_retval(process(input, env));
 		}
 		free(input);
+		free(prompt);
 	}
 	return (0);
 }
