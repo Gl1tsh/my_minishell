@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:41 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/24 15:56:21 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/24 16:05:02 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ int	main(int argc, char **argv, char **env)
 {
 	char	*input;
 	char	*prompt;
+	t_cmd	*cmds;
 
 	(void)argc;
 	(void)argv;
@@ -31,7 +32,8 @@ int	main(int argc, char **argv, char **env)
 		if (*input)
 		{
 			add_history(input);
-			parsing(input, env);
+			parse_commands(&cmds, input, env);
+			run_commands(cmds, env);
 		}
 		free(input);
 	}

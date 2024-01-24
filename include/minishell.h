@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 11:57:44 by tomuller          #+#    #+#             */
-/*   Updated: 2024/01/24 15:56:30 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/24 16:03:35 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ typedef struct s_cmd
 	struct s_cmd	*next;
 }	t_cmd;
 
+int			parse_commands(t_cmd **head, char *input, char **env);
 void		run_commands(t_cmd *commands, char **env);
 
 // builtin
