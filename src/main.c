@@ -6,11 +6,14 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:41 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/23 17:22:42 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/24 15:56:21 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+#include <readline/readline.h>
+#include <readline/history.h>
 
 int	main(int argc, char **argv, char **env)
 {
