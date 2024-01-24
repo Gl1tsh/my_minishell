@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:41 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/24 16:05:02 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/24 17:28:55 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,18 @@
 
 #include <readline/readline.h>
 #include <readline/history.h>
+
+void print_commands(t_cmd *cmds)
+{
+	t_arg	*arg;
+
+	arg = cmds->args;
+	while (arg != NULL)
+	{
+		fprintf(stderr, "arg : [%s]\n", arg->dynamic_str.bytes);
+		arg = arg->next;
+	}
+}
 
 int	main(int argc, char **argv, char **env)
 {
@@ -33,7 +45,8 @@ int	main(int argc, char **argv, char **env)
 		{
 			add_history(input);
 			parse_commands(&cmds, input, env);
-			run_commands(cmds, env);
+			//run_commands(cmds, env);
+			print_commands(cmds);
 		}
 		free(input);
 	}
