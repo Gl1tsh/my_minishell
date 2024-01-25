@@ -15,11 +15,13 @@
 #define VARNAME_CHARSET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
 0123456789_"
 
-t_arg	*allocate_arg(void)
+t_arg	*allocate_arg(t_arg *current)
 {
 	t_arg	*arg;
-	arg = malloc(sizeof(t_arg));
+	arg = ft_calloc(1, sizeof(t_arg));
 	dstr_allocate(&arg->dynamic_str, 16);
+	if (current)
+		current->next = arg;
 	return (arg);
 }
 
@@ -73,43 +75,60 @@ char *parse_argument(t_arg *arg, char *input)
 	}
 }
 
-//t_arg	*link_and_prepare_arg(t_arg *arg,)
+char	*skip_spaces(char *input)
+{
+	while (*input == ' ' || *input == '\t')
+		input++;
+	return (input);
+}
 
-int	parse_commands(t_cmd **head, char *input, char **env)
+t_cmd	*allocate_cmd(t_cmd *current)
 {
 	t_cmd	*cmd;
+
+	cmd = ft_calloc(1, sizeof(t_cmd));
+	cmd->args = allocate_arg(NULL);
+	if (current)
+		current->next = cmd;
+	return (cmd);
+}
+
+int	internal_parse_commands(t_cmd *cmd, char *input, char **env)
+{
 	t_arg	*arg;
 
-	t_arg	*last_arg;
-	t_arg	**next_arg_in_cmd;
-
-	cmd = malloc(sizeof(t_cmd));
-	next_arg_in_cmd = &cmd->args;
-	arg = allocate_arg();
-
+	arg = cmd->args;
 	while (*input)
 	{
-		fprintf(stderr, "parse_commands: *input [%c]\n", *input);
 		if (*input == '|')
 		{
-			*head = cmd;
-			return (0);
+			input = skip_spaces(input + 1);
+			if (*input == '|' || *input == '\0')
+				return 1; //ERROR_ORPHANED_PIPE;
+
+			cmd = allocate_cmd(cmd);
+			arg = cmd->args;
 		}
 		else if (*input == ' ' || *input == '\t')
 		{
-			/*
-			*next_arg_in_cmd = arg;
-			last_arg = arg;
-			arg = allocate_arg();
-			next_arg_in_cmd = &last_arg->next;
-			*/
-			fprintf(stderr, "parse_commands: found space: arg: %s\n", arg->dynamic_str.bytes);
-			arg = allocate_arg();
-			while (*input == ' ' || *input == '\t')
-				input++;
+			input = skip_spaces(input);
+			if (*input != '|')
+				arg = allocate_arg(arg);
 		}
 		else
 			input = parse_argument(arg, input);
 	}
 	return (0);
+}
+
+int	parse_commands(t_cmd **head, char *input, char **env)
+{
+	if (*input == '|')
+	{
+		*head = NULL;
+		return 1; //ERROR_ORPHANED_PIPE;
+	}
+
+	*head = allocate_cmd(NULL);
+	return internal_parse_commands(*head, input, env);
 }
