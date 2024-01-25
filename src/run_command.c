@@ -100,7 +100,7 @@ int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, char **env)
 	return 0;
 }
 
-void    run_commands(t_cmd *commands, char **env)
+int	run_commands(t_cmd *commands, char **env)
 {
     // Run a pre-flight converting `command` to its path and calling `access`
     // (what to do when one of the command in the pipeline is an builtin?)
@@ -114,4 +114,5 @@ void    run_commands(t_cmd *commands, char **env)
 		perror(NULL);
 	}
     fprintf(stderr, "run_commands: after\n");
+	return 0;
 }

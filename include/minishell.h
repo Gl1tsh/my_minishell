@@ -40,7 +40,7 @@ typedef struct s_cmd
 }	t_cmd;
 
 int			parse_commands(t_cmd **head, char *input, char **env);
-void		run_commands(t_cmd *commands, char **env);
+int			run_commands(t_cmd *commands, char **env);
 
 // builtin
 void		builtin_echo(char **args, int in_fd, int out_fd, char **env);
