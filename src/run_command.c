@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:10:53 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/24 16:28:39 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/26 12:56:50 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,23 +95,15 @@ int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, char **env)
 	safe_close(fd[1]);
 	safe_close(in_fd);
 	if (cmds->next != NULL)
-		return exec_pipeline(cmds->next, fd[0], out_fd, env);
+		return (exec_pipeline(cmds->next, fd[0], out_fd, env));
 	waitpid(pid, &status, 0);
 	return 0;
 }
 
-void    run_commands(t_cmd *commands, char **env)
+int	run_commands(t_cmd *commands, char **env)
 {
-    // Run a pre-flight converting `command` to its path and calling `access`
-    // (what to do when one of the command in the pipeline is an builtin?)
 	signal(SIGINT, &cmd_signal_handler);
 	signal(SIGQUIT, &cmd_signal_handler);
-	fprintf(stderr, "run_commands: before\n");
-    int error = exec_pipeline(commands, STDIN_FILENO, STDOUT_FILENO, env);
-	if (error > 100)
-	{
-		fprintf(stderr, "run_commands: piping failed %d\n", error);
-		perror(NULL);
-	}
-    fprintf(stderr, "run_commands: after\n");
+	// fprintf(stderr, "run_commands: before\n");
+	return (exec_pipeline(commands, STDIN_FILENO, STDOUT_FILENO, env));
 }
