@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 15:47:19 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/26 13:30:49 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/26 14:06:32 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,27 @@
 
 #define VARNAME_CHARSET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
 0123456789_"
+#define WHITESPACE_CHARSET " \t\n\v\f\r"
 
 t_arg	*allocate_arg(t_arg *prev_arg)
 {
 	t_arg	*arg;
+
 	arg = ft_calloc(1, sizeof(t_arg));
-	arg->next = prev_arg;
+	if (prev_arg != NULL)
+		prev_arg->next = arg;
 	dstr_allocate(&arg->dynamic_str, 16);
 	return (arg);
 }
 
-t_cmd	*allocate_cmd(void)
+t_cmd	*allocate_cmd(t_cmd *prev_cmd)
 {
 	t_cmd *cmd;
 
 	cmd = ft_calloc(1, sizeof(t_cmd));
-	cmd->args = allocate_arg(NULL);ä$ü¨
+	if (prev_cmd != NULL)
+		prev_cmd->next = cmd;
+	cmd->args = allocate_arg(NULL);
 	return (cmd);
 }
 
@@ -90,7 +95,8 @@ int	parse_commands(t_cmd **head, char *input, char **env)
 	t_cmd	*cmd;
 	t_arg	*arg;
 
-	cmd = allocate_cmd();
+	cmd = allocate_cmd(NULL);
+	*head = cmd;
 	arg = cmd->args;
 
 	while (*input)
@@ -98,14 +104,15 @@ int	parse_commands(t_cmd **head, char *input, char **env)
 		fprintf(stderr, "parse_commands: *input [%c]\n", *input);
 		if (*input == '|')
 		{
-			*head = cmd;
-			return (0);
+			cmd = allocate_cmd(cmd);
+			arg = cmd->args;
+			input++;
 		}
-		else if (*input == ' ' || *input == '\t')
+		else if (ft_strchr(WHITESPACE_CHARSET, *input))
 		{
 			fprintf(stderr, "parse_commands: found space: arg: %s\n", arg->dynamic_str.bytes);
 			arg = allocate_arg(arg);
-			while (*input == ' ' || *input == '\t')
+			while (ft_strchr(WHITESPACE_CHARSET, *input))
 				input++;
 		}
 		else

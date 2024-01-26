@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:41 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/24 18:41:34 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/26 13:45:15 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,17 @@ void print_commands(t_cmd *cmds)
 {
 	t_arg	*arg;
 
-	fprintf(stderr, "cmd : args %p \n", cmds->args);
-	arg = cmds->args;
-	while (arg != NULL)
+	while (cmds != NULL)
 	{
-		fprintf(stderr, "arg : %p \n", arg);
-		fprintf(stderr, "arg : [%s]\n", arg->dynamic_str.bytes);
-		arg = arg->next;
+		fprintf(stderr, "cmd : args %p \n", cmds->args);
+		arg = cmds->args;
+		while (arg != NULL)
+		{
+			fprintf(stderr, "arg : %p \n", arg);
+			fprintf(stderr, "arg : [%s]\n", arg->dynamic_str.bytes);
+			arg = arg->next;
+		}
+		cmds = cmds->next;
 	}
 }
 
