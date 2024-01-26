@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:41 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/26 14:43:44 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/26 14:48:23 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,9 @@ int	main(int argc, char **argv, char **env)
 			parse_commands(&cmds, clean_input, env);
 			//run_commands(cmds, env);
 			print_commands(cmds);
+			free_commands(cmds);
 		}
+		free(prompt);
 		free(input);
 		free(clean_input);
 	}
