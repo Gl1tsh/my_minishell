@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:41 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/26 14:32:41 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/26 14:43:44 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,27 @@ void print_commands(t_cmd *cmds)
 			fprintf(stderr, "arg : [%s]\n", arg->dynamic_str.bytes);
 			arg = arg->next;
 		}
+		free(cmds->path);
 		cmds = cmds->next;
 	}
+}
+
+void	free_commands(t_cmd *cmds)
+{
+	t_arg	*arg;
+
+	while (cmds != NULL)
+	{
+		arg = cmds->args;
+		while (arg != NULL)
+		{
+			dstr_free(&arg->dynamic_str);
+			free(arg);
+			arg = arg->next;
+		}
+		free(cmds);
+		cmds = cmds->next;
+	}	
 }
 
 int	main(int argc, char **argv, char **env)
