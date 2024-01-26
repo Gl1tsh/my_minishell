@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:41 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/26 14:48:23 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/26 15:00:26 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ void print_commands(t_cmd *cmds)
 void	free_commands(t_cmd *cmds)
 {
 	t_arg	*arg;
+	t_arg	*next_arg;
+	t_cmd	*next_cmd;
 
 	while (cmds != NULL)
 	{
@@ -44,11 +46,13 @@ void	free_commands(t_cmd *cmds)
 		while (arg != NULL)
 		{
 			dstr_free(&arg->dynamic_str);
+			next_arg = arg->next;
 			free(arg);
-			arg = arg->next;
+			arg = next_arg;
 		}
+		next_cmd = cmds->next;
 		free(cmds);
-		cmds = cmds->next;
+		cmds = next_cmd;
 	}	
 }
 
@@ -66,7 +70,10 @@ int	main(int argc, char **argv, char **env)
 		prompt = ft_strjoin(getenv("PWD"), " > ");
 		input = readline(prompt);
 		if (input == NULL)
+		{
+			free(prompt);
 			break ;
+		}
 		clean_input = ft_strtrim(input, WHITESPACE_CHARSET);
 		if (*clean_input != '\0')
 		{
