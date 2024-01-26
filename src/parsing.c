@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 15:47:19 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/24 18:53:48 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/26 13:30:49 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,22 @@
 #define VARNAME_CHARSET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
 0123456789_"
 
-t_arg	*allocate_arg(void)
+t_arg	*allocate_arg(t_arg *prev_arg)
 {
 	t_arg	*arg;
-	arg = malloc(sizeof(t_arg));
+	arg = ft_calloc(1, sizeof(t_arg));
+	arg->next = prev_arg;
 	dstr_allocate(&arg->dynamic_str, 16);
 	return (arg);
+}
+
+t_cmd	*allocate_cmd(void)
+{
+	t_cmd *cmd;
+
+	cmd = ft_calloc(1, sizeof(t_cmd));
+	cmd->args = allocate_arg(NULL);ä$ü¨
+	return (cmd);
 }
 
 char	*parse_dollar(t_arg *arg, char *input)
@@ -80,12 +90,8 @@ int	parse_commands(t_cmd **head, char *input, char **env)
 	t_cmd	*cmd;
 	t_arg	*arg;
 
-	t_arg	*last_arg;
-	t_arg	**next_arg_in_cmd;
-
-	cmd = malloc(sizeof(t_cmd));
-	next_arg_in_cmd = &cmd->args;
-	arg = allocate_arg();
+	cmd = allocate_cmd();
+	arg = cmd->args;
 
 	while (*input)
 	{
@@ -97,14 +103,8 @@ int	parse_commands(t_cmd **head, char *input, char **env)
 		}
 		else if (*input == ' ' || *input == '\t')
 		{
-			/*
-			*next_arg_in_cmd = arg;
-			last_arg = arg;
-			arg = allocate_arg();
-			next_arg_in_cmd = &last_arg->next;
-			*/
 			fprintf(stderr, "parse_commands: found space: arg: %s\n", arg->dynamic_str.bytes);
-			arg = allocate_arg();
+			arg = allocate_arg(arg);
 			while (*input == ' ' || *input == '\t')
 				input++;
 		}
