@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:41 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/26 13:45:15 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/26 14:32:41 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ int	main(int argc, char **argv, char **env)
 	char	*input;
 	char	*prompt;
 	t_cmd	*cmds;
+	char	*clean_input;
 
 	(void)argc;
 	(void)argv;
@@ -45,16 +46,18 @@ int	main(int argc, char **argv, char **env)
 	{
 		prompt = ft_strjoin(getenv("PWD"), " > ");
 		input = readline(prompt);
-		if (!input)
+		if (input == NULL)
 			break ;
-		if (*input)
+		clean_input = ft_strtrim(input, WHITESPACE_CHARSET);
+		if (*clean_input != '\0')
 		{
 			add_history(input);
-			parse_commands(&cmds, input, env);
+			parse_commands(&cmds, clean_input, env);
 			//run_commands(cmds, env);
 			print_commands(cmds);
 		}
 		free(input);
+		free(clean_input);
 	}
 	return (0);
 }

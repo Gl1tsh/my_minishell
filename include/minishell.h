@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 11:57:44 by tomuller          #+#    #+#             */
-/*   Updated: 2024/01/26 12:57:09 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/26 14:26:20 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include "dstr.h"
+
+# define WHITESPACE_CHARSET " \t\n\v\f\r"
 
 // pointed fonction for builtin
 typedef void	(*t_builtin)(char **, int, int, char **);

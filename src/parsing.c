@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 15:47:19 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/26 14:21:03 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/26 14:26:05 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 #define VARNAME_CHARSET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
 0123456789_"
-#define WHITESPACE_CHARSET " \t\n\v\f\r"
 
 t_arg	*allocate_arg(t_arg *prev_arg)
 {
