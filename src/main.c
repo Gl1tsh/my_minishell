@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:41 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/26 15:00:26 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/26 15:27:43 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ void print_commands(t_cmd *cmds)
 			fprintf(stderr, "arg : [%s]\n", arg->dynamic_str.bytes);
 			arg = arg->next;
 		}
-		free(cmds->path);
 		cmds = cmds->next;
 	}
 }
@@ -50,10 +49,25 @@ void	free_commands(t_cmd *cmds)
 			free(arg);
 			arg = next_arg;
 		}
+		free(cmds->path);
 		next_cmd = cmds->next;
 		free(cmds);
 		cmds = next_cmd;
 	}	
+}
+
+int	which_commands(t_cmd *cmds)
+{
+	int	exit_status;
+
+	while (cmds != NULL)
+	{
+		exit_status = path_or_builtin(cmds);
+		if (exit_status != 0)
+			return (exit_status);
+		cmds = cmds->next;
+	}
+	return (0);
 }
 
 int	main(int argc, char **argv, char **env)
@@ -79,8 +93,9 @@ int	main(int argc, char **argv, char **env)
 		{
 			add_history(input);
 			parse_commands(&cmds, clean_input, env);
-			//run_commands(cmds, env);
-			print_commands(cmds);
+			which_commands(cmds);
+			run_commands(cmds, env);
+			//print_commands(cmds);
 			free_commands(cmds);
 		}
 		free(prompt);
