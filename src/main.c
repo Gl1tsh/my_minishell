@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:41 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/26 15:27:43 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/29 15:33:21 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void print_commands(t_cmd *cmds)
 	}
 }
 
-void	free_commands(t_cmd *cmds)
+int	free_commands(t_cmd *cmds, int exit_status)
 {
 	t_arg	*arg;
 	t_arg	*next_arg;
@@ -53,7 +53,8 @@ void	free_commands(t_cmd *cmds)
 		next_cmd = cmds->next;
 		free(cmds);
 		cmds = next_cmd;
-	}	
+	}
+	return (exit_status);
 }
 
 int	which_commands(t_cmd *cmds)
@@ -70,11 +71,26 @@ int	which_commands(t_cmd *cmds)
 	return (0);
 }
 
+int	launch_commands(char *input, char **env)
+{
+	int	exit_status;
+	t_cmd	*cmds;
+
+	exit_status = parse_commands(&cmds, input, env);
+	if (exit_status != 0)
+		return (free_commands(cmds, exit_status));
+	exit_status = which_commands(cmds);
+	if (exit_status != 0)
+		return (free_commands(cmds, exit_status));
+	exit_status = run_commands(cmds, env);
+	//print_commands(cmds);
+	return (free_commands(cmds, exit_status));
+}
+
 int	main(int argc, char **argv, char **env)
 {
 	char	*input;
 	char	*prompt;
-	t_cmd	*cmds;
 	char	*clean_input;
 
 	(void)argc;
@@ -92,11 +108,7 @@ int	main(int argc, char **argv, char **env)
 		if (*clean_input != '\0')
 		{
 			add_history(input);
-			parse_commands(&cmds, clean_input, env);
-			which_commands(cmds);
-			run_commands(cmds, env);
-			//print_commands(cmds);
-			free_commands(cmds);
+			launch_commands(clean_input, env);
 		}
 		free(prompt);
 		free(input);
