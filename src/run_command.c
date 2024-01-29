@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:10:53 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/29 16:07:59 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/29 16:26:19 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,11 +50,10 @@ char	**convert_args(t_arg *args)
 	return (args_array);
 }
 
-void	exec(t_cmd *cmd, char **env)
+int	perror_return(char *message, int exit_status)
 {
-	execve(cmd->path, convert_args(cmd->args), env);
-	perror("exec");
-	exit(127);
+	perror(message);
+	return (exit_status);
 }
 
 void	safe_close(int fd)
@@ -83,6 +82,32 @@ void redirect(int oldfd, int newfd)
 	}
 }
 
+int	exec_builtin(t_cmd *cmds, int in_fd, int *fd, char **env)
+{
+	return (cmds->builtin(convert_args(cmds->args), env));
+}
+
+int	exec_cmd(t_cmd *cmds, int in_fd, int *fd, char **env)
+{
+	int	pid;
+
+	pid = fork();
+	if (pid == -1)
+		return perror_return("exec_cmd", 1);
+	if (pid == 0)
+	{
+		safe_close(fd[0]);
+		redirect(in_fd, STDIN_FILENO);
+		redirect(fd[1], STDOUT_FILENO);
+		execve(cmds->path, convert_args(cmds->args), env);
+		perror("exec");
+		exit(127);
+	}
+	safe_close(fd[1]);
+	safe_close(in_fd);
+	return (pid);
+}
+
 int	setup_pipe(t_cmd *cmds, int out_fd, int *fd)
 {
 	if (cmds->next == NULL)
@@ -92,10 +117,7 @@ int	setup_pipe(t_cmd *cmds, int out_fd, int *fd)
 		return (0);
 	}
 	if (pipe(fd) == -1)
-	{
-		perror("setup_pipe");
-		return (1);
-	}
+		return (perror_return("setup_pipe", 1));
 	return (0);
 }
 
@@ -110,23 +132,11 @@ int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, char **env)
 		return (1);
 	if (cmds->builtin != NULL)
 	{
-		cmds->builtin(convert_args(cmds->args), env);
+		exec_builtin(cmds, in_fd, fd, env);
+		pid = 0;
 	}
 	else
-	{
-		pid = fork();
-		if (pid == -1)
-			return 112;
-		if (pid == 0)
-		{
-			safe_close(fd[0]);
-			redirect(in_fd, STDIN_FILENO);
-			redirect(fd[1], STDOUT_FILENO);
-			exec(cmds, env);
-		}
-	}
-	safe_close(fd[1]);
-	safe_close(in_fd);
+		pid = exec_cmd(cmds, in_fd, fd, env);
 	if (cmds->next != NULL)
 		return (exec_pipeline(cmds->next, fd[0], out_fd, env));
 	waitpid(pid, &status, 0);
