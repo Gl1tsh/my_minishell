@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 11:57:44 by tomuller          #+#    #+#             */
-/*   Updated: 2024/01/29 15:52:40 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/29 18:02:42 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ typedef struct s_cmd
 	t_builtin		builtin; //pointer to builtin
 	char			*dirin; // redirect in
 	char			*dirout; // redirect out
+	int				dirin_mode;
+	int				dirout_mode;
 	struct s_cmd	*next; // chained list of cmds
 }	t_cmd;
 

@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:41 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/29 15:44:48 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/29 18:10:24 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,13 @@ int	launch_commands(char *input, char **env)
 	exit_status = which_commands(cmds);
 	if (exit_status != 0)
 		return (free_commands(cmds, exit_status));
+	// {
+	// 	t_cmd *cmd = cmds;
+	// 	//cmds->dirin = "infile";
+	// 	while (cmd->next != NULL)
+	// 		cmd = cmd->next;
+	// 	cmd->dirout = ">>outfile";
+	// }
 	exit_status = run_commands(cmds, env);
 	//print_commands(cmds);
 	return (free_commands(cmds, exit_status));
