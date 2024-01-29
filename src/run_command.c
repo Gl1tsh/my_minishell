@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:10:53 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/26 15:29:33 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/29 15:13:41 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,35 @@
 *                                                                             *
 ******************************************************************************/
 
+char	**convert_args(t_arg *args)
+{
+	char	**args_array;
+	t_arg	*args_head;
+	int 	i;
+
+	i = 0;
+	args_head = args;
+	while (args != NULL)
+	{
+		i++;
+		args = args->next;
+	}
+	args_array = malloc(sizeof(char *) * (i + 1));
+	i = 0;
+	while (args_head != NULL)
+	{
+		args_array[i] = args_head->dynamic_str.bytes;
+		args_head = args_head->next;
+		i++;
+	}
+	args_array[i] = NULL;
+	return (args_array);
+}
+
 void	exec(t_cmd *cmd, char **env)
 {
-	execve(cmd->path, cmd->args, env);
-	write(STDERR_FILENO, "exec : command not found\n", 20);
+	execve(cmd->path, convert_args(cmd->args), env);
+	perror("exec");
 	exit(127);
 }
 
