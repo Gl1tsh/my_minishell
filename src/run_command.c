@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:10:53 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/29 16:26:19 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/29 16:35:36 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,17 @@ void redirect(int oldfd, int newfd)
 
 int	exec_builtin(t_cmd *cmds, int in_fd, int *fd, char **env)
 {
-	return (cmds->builtin(convert_args(cmds->args), env));
+	int exit_status;
+	int	tmp_fd[2];
+
+	tmp_fd[0] = dup(STDIN_FILENO);
+	tmp_fd[1] = dup(STDOUT_FILENO);
+	redirect(in_fd, STDIN_FILENO);
+	redirect(fd[1], STDOUT_FILENO);
+	exit_status = cmds->builtin(convert_args(cmds->args), env);
+	redirect(tmp_fd[0], STDIN_FILENO);
+	redirect(tmp_fd[1], STDOUT_FILENO);
+	return (exit_status);
 }
 
 int	exec_cmd(t_cmd *cmds, int in_fd, int *fd, char **env)
