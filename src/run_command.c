@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:10:53 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/29 15:56:11 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/29 16:07:59 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,22 @@ void redirect(int oldfd, int newfd)
 	}
 }
 
+int	setup_pipe(t_cmd *cmds, int out_fd, int *fd)
+{
+	if (cmds->next == NULL)
+	{
+		fd[0] = -1;
+		fd[1] = out_fd;
+		return (0);
+	}
+	if (pipe(fd) == -1)
+	{
+		perror("setup_pipe");
+		return (1);
+	}
+	return (0);
+}
+
 int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, char **env)
 {
 	int fd[2];
@@ -90,16 +106,8 @@ int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, char **env)
 	int	status;
 
 	fprintf(stderr, "exec_pipeline: running\n");
-	if (cmds->next == NULL)
-	{
-		fd[0] = -1;
-		fd[1] = out_fd;
-	}
-	else
-	{
-		if (pipe(fd) == -1)
-			return 111;
-	}
+	if (setup_pipe(cmds, out_fd, fd) != 0)
+		return (1);
 	if (cmds->builtin != NULL)
 	{
 		cmds->builtin(convert_args(cmds->args), env);
