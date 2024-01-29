@@ -6,13 +6,13 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:27 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/23 17:22:29 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/29 15:49:39 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	builtin_env(char **args, int in_fd, int out_fd, char **env)
+int	builtin_env(char **args, char **env)
 {
 	int			i;
 

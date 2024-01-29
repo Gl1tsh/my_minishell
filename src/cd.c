@@ -6,16 +6,14 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:10 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/23 17:28:36 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/29 15:56:34 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	builtin_cd(char **args, int in_fd, int out_fd, char **env)
+int	builtin_cd(char **args, char **env)
 {
-	char	**path;
-
 	if (args[1] == NULL)
 		chdir(getenv("HOME"));
 	else
@@ -29,4 +27,5 @@ void	builtin_cd(char **args, int in_fd, int out_fd, char **env)
 		else
 			chdir(args[1]);
 	}
+	return (0);
 }

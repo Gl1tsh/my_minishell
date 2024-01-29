@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 11:57:44 by tomuller          #+#    #+#             */
-/*   Updated: 2024/01/26 15:22:45 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/29 15:52:40 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 # define WHITESPACE_CHARSET " \t\n\v\f\r"
 
 // pointed fonction for builtin
-typedef void	(*t_builtin)(char **, int, int, char **);
+typedef int	(*t_builtin)(char **, char **);
 
 typedef struct s_arg
 {
@@ -47,12 +47,12 @@ int			run_commands(t_cmd *commands, char **env);
 int			path_or_builtin(t_cmd *cmd);
 
 // builtin
-void		builtin_echo(char **args, int in_fd, int out_fd, char **env);
-void		builtin_cd(char **args, int in_fd, int out_fd, char **env);
-void		builtin_pwd(char **args, int in_fd, int out_fd, char **env);
-void		builtin_export(char **args, int in_fd, int out_fd, char **env);
-void		builtin_unset(char **args, int in_fd, int out_fd, char **env);
-void		builtin_env(char **args, int in_fd, int out_fd, char **env);
-void		builtin_exit(char **args, int in_fd, int out_fd, char **env);
+int			builtin_echo(char **args, char **env);
+int			builtin_cd(char **args, char **env);
+int			builtin_pwd(char **args, char **env);
+int			builtin_export(char **args, char **env);
+int			builtin_unset(char **args, char **env);
+int			builtin_env(char **args, char **env);
+int			builtin_exit(char **args, char **env);
 
 #endif

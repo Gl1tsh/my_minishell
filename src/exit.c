@@ -6,13 +6,13 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:34 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/23 17:22:35 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/29 15:57:02 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	builtin_exit(char **args, int in_fd, int out_fd, char **env)
+int	builtin_exit(char **args, char **env)
 {
 	exit(0);
 }

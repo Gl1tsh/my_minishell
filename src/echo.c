@@ -6,13 +6,13 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:21 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/23 17:22:22 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/01/29 15:56:46 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	builtin_echo(char **args, int in_fd, int out_fd, char **env)
+int	builtin_echo(char **args, char **env)
 {
 	int	i;
 	int	option_n;
@@ -26,4 +26,5 @@ void	builtin_echo(char **args, int in_fd, int out_fd, char **env)
 		printf("%s ", args[i++]);
 	if (!option_n)
 		printf("\n");
+	return (0);
 }
