@@ -21,12 +21,13 @@ void print_commands(t_cmd *cmds)
 
 	while (cmds != NULL)
 	{
-		fprintf(stderr, "cmd : args %p \n", cmds->args);
+		fprintf(stderr, "cmd: args %p\n", cmds->args);
+		fprintf(stderr, "  dirin:  [%s]\n", cmds->dirin);
+		fprintf(stderr, "  dirout: [%s]\n", cmds->dirout);
 		arg = cmds->args;
 		while (arg != NULL)
 		{
-			fprintf(stderr, "arg : %p \n", arg);
-			fprintf(stderr, "arg : [%s]\n", arg->dynamic_str.bytes);
+			fprintf(stderr, "  arg: %p [%s]\n", arg->dynamic_str.bytes, arg->dynamic_str.bytes);
 			arg = arg->next;
 		}
 		cmds = cmds->next;
@@ -50,6 +51,8 @@ int	free_commands(t_cmd *cmds, int exit_status)
 			arg = next_arg;
 		}
 		free(cmds->path);
+		free(cmds->dirin);
+		free(cmds->dirout);
 		next_cmd = cmds->next;
 		free(cmds);
 		cmds = next_cmd;
@@ -79,18 +82,14 @@ int	launch_commands(char *input, char **env)
 	exit_status = parse_commands(&cmds, input, env);
 	if (exit_status != 0)
 		return (free_commands(cmds, exit_status));
+	print_commands(cmds);
+	exit_status = process_heredoc(cmds);
+	if (exit_status != 0)
+		return (free_commands(cmds, exit_status));
 	exit_status = which_commands(cmds);
 	if (exit_status != 0)
 		return (free_commands(cmds, exit_status));
-	// {
-	// 	t_cmd *cmd = cmds;
-	// 	//cmds->dirin = "infile";
-	// 	while (cmd->next != NULL)
-	// 		cmd = cmd->next;
-	// 	cmd->dirout = ">>outfile";
-	// }
 	exit_status = run_commands(cmds, env);
-	//print_commands(cmds);
 	return (free_commands(cmds, exit_status));
 }
 
