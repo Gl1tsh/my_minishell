@@ -45,8 +45,16 @@ typedef struct s_cmd
 
 # define DIRIN_MODE_HEREDOC 1
 
-int			parse_commands(t_cmd **head, char *input, char **env);
-int			run_commands(t_cmd *commands, char **env);
+// env
+typedef char **t_env;
+
+char		**copy_env(char **env, int additional_slot_count);
+char		*get_env_var(t_env *env, char *var_name);
+t_env		*update_env_var(t_env *env, char *var_name, char *var_value);
+void		remove_env_var(t_env *env, char *var_name);
+
+int			parse_commands(t_cmd **head, char *input);
+int			run_commands(t_cmd *commands, t_env *env);
 int			process_heredoc(t_cmd *commands);
 
 int			path_or_builtin(t_cmd *cmd);

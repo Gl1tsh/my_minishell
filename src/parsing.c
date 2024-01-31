@@ -123,7 +123,7 @@ char	*parse_redir(t_cmd *cmd, char *input)
 	return (input);
 }
 
-int	internal_parse_commands(t_cmd *cmd, char *input, char **env)
+int	internal_parse_commands(t_cmd *cmd, char *input)
 {
 	t_arg	*arg;
 
@@ -152,7 +152,7 @@ int	internal_parse_commands(t_cmd *cmd, char *input, char **env)
 	return (0);
 }
 
-int	parse_commands(t_cmd **head, char *input, char **env)
+int	parse_commands(t_cmd **head, char *input)
 {
 	if (*input == '|')
 	{
@@ -160,5 +160,5 @@ int	parse_commands(t_cmd **head, char *input, char **env)
 		return (1); //ERROR_ORPHANED_PIPE;
 	}
 	*head = allocate_cmd(NULL);
-	return (internal_parse_commands(*head, input, env));
+	return (internal_parse_commands(*head, input));
 }

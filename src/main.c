@@ -82,12 +82,12 @@ int	which_commands(t_cmd *cmds)
 	return (0);
 }
 
-int	launch_commands(char *input, char **env)
+int	launch_commands(char *input, t_env *env)
 {
 	int	exit_status;
 	t_cmd	*cmds;
 
-	exit_status = parse_commands(&cmds, input, env);
+	exit_status = parse_commands(&cmds, input);
 	if (exit_status != 0)
 		return (free_commands(cmds, exit_status));
 	print_commands(cmds);
@@ -101,14 +101,16 @@ int	launch_commands(char *input, char **env)
 	return (free_commands(cmds, exit_status));
 }
 
-int	main(int argc, char **argv, char **env)
+int	main(int argc, char **argv, char **org_env)
 {
 	char	*input;
 	char	*prompt;
 	char	*clean_input;
+	t_env	env;
 
 	(void)argc;
 	(void)argv;
+	env = copy_env(org_env, 0);
 	signal(SIGINT, parsing_signal_handler);
 	signal(SIGQUIT, SIG_IGN);
 	while (1)
@@ -124,7 +126,7 @@ int	main(int argc, char **argv, char **env)
 		if (*clean_input != '\0')
 		{
 			add_history(input);
-			launch_commands(clean_input, env);
+			launch_commands(clean_input, &env);
 		}
 		free(prompt);
 		free(input);

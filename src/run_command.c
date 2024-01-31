@@ -80,7 +80,7 @@ int	redirect(int oldfd, int newfd)
 	return (0);
 }
 
-int	exec_builtin(t_cmd *cmds, int in_fd, int *fd, char **env)
+int	exec_builtin(t_cmd *cmds, int in_fd, int *fd, t_env *env)
 {
 	int	exit_status;
 	int	tmp_fd[2];
@@ -91,7 +91,7 @@ int	exec_builtin(t_cmd *cmds, int in_fd, int *fd, char **env)
 		return (1);
 	if (redirect(fd[1], STDOUT_FILENO) != 0)
 		return (1);
-	exit_status = cmds->builtin(convert_args(cmds->args), env);
+	exit_status = cmds->builtin(convert_args(cmds->args), *env);
 	if (redirect(tmp_fd[0], STDIN_FILENO) != 0)
 		return (1);
 	if (redirect(tmp_fd[1], STDOUT_FILENO) != 0)
@@ -99,7 +99,7 @@ int	exec_builtin(t_cmd *cmds, int in_fd, int *fd, char **env)
 	return (exit_status);
 }
 
-int	exec_cmd(t_cmd *cmds, int in_fd, int *fd, char **env)
+int	exec_cmd(t_cmd *cmds, int in_fd, int *fd, t_env *env)
 {
 	int	pid;
 
@@ -113,7 +113,7 @@ int	exec_cmd(t_cmd *cmds, int in_fd, int *fd, char **env)
 			exit(127);
 		if (redirect(fd[1], STDOUT_FILENO) != 0)
 			exit(127);
-		execve(cmds->path, convert_args(cmds->args), env);
+		execve(cmds->path, convert_args(cmds->args), *env);
 		perror("exec");
 		exit(127);
 	}
@@ -135,7 +135,7 @@ int	setup_pipe(t_cmd *cmds, int out_fd, int *fd)
 	return (0);
 }
 
-int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, char **env)
+int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, t_env *env)
 {
 	int	fd[2];
 	int	pid;
@@ -176,7 +176,7 @@ int	setup_redirections(t_cmd *cmds, int *fd)
 	return (0);
 }
 
-int	run_commands(t_cmd *commands, char **env)
+int	run_commands(t_cmd *commands, t_env *env)
 {
 	int	fd[4];
 	int	exit_status;
