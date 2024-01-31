@@ -43,10 +43,15 @@ typedef struct s_cmd
 	struct s_cmd	*next; // chained list of cmds
 }	t_cmd;
 
+# define DIRIN_MODE_HEREDOC 1
+
 int			parse_commands(t_cmd **head, char *input, char **env);
 int			run_commands(t_cmd *commands, char **env);
+int			process_heredoc(t_cmd *commands);
 
 int			path_or_builtin(t_cmd *cmd);
+char		*join_path(char const *s1, char const *s2);
+void		parsing_signal_handler(int sig_num);
 
 // builtin
 int			builtin_echo(char **args, char **env);
