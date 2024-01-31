@@ -15,6 +15,14 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+void	parsing_signal_handler(int sig_num)
+{
+	(void)sig_num;
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
 void print_commands(t_cmd *cmds)
 {
 	t_arg	*arg;
@@ -101,6 +109,8 @@ int	main(int argc, char **argv, char **env)
 
 	(void)argc;
 	(void)argv;
+	signal(SIGINT, parsing_signal_handler);
+	signal(SIGQUIT, SIG_IGN);
 	while (1)
 	{
 		prompt = ft_strjoin(getenv("PWD"), " > ");
