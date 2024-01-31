@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <fcntl.h>
 
 #define VARNAME_CHARSET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
 0123456789_"
@@ -28,13 +29,20 @@ t_arg	*allocate_arg(t_arg *prev_arg)
 
 t_cmd	*allocate_cmd(t_cmd *prev_cmd)
 {
-	t_cmd *cmd;
+	t_cmd	*cmd;
 
 	cmd = ft_calloc(1, sizeof(t_cmd));
 	if (prev_cmd != NULL)
 		prev_cmd->next = cmd;
 	cmd->args = allocate_arg(NULL);
 	return (cmd);
+}
+
+char	*skip_whitespace(char *input)
+{
+	while (*input && ft_strchr(WHITESPACE_CHARSET, *input))
+		input++;
+	return (input);
 }
 
 char	*parse_dollar(t_arg *arg, char *input)
@@ -59,7 +67,7 @@ char	*parse_dollar(t_arg *arg, char *input)
 	return (input);
 }
 
-char *parse_argument(t_arg *arg, char *input)
+char	*parse_argument(t_arg *arg, char *input)
 {
 	if (*input == '"')
 	{
@@ -87,38 +95,70 @@ char *parse_argument(t_arg *arg, char *input)
 	}
 }
 
-//t_arg	*link_and_prepare_arg(t_arg *arg,)
-
-int	parse_commands(t_cmd **head, char *input, char **env)
+char	*parse_redir(t_cmd *cmd, char *input)
 {
-	t_cmd	*cmd;
+	t_arg	fake_arg;
+	char	redir_char;
+
+	cmd->dirout_mode = O_CREAT | O_TRUNC | O_WRONLY;
+	redir_char = *input++;
+	if (*input == redir_char)
+	{
+		input++;
+		if (redir_char == '>')
+			cmd->dirout_mode = O_CREAT | O_APPEND | O_WRONLY;
+		else if (redir_char == '<')
+			cmd->dirin_mode = DIRIN_MODE_HEREDOC;
+	}
+	dstr_allocate(&fake_arg.dynamic_str, 16);
+	input = skip_whitespace(input);
+	while (*input && !ft_strchr(WHITESPACE_CHARSET "|<>", *input))
+		input = parse_argument(&fake_arg, input);
+	input = skip_whitespace(input);
+	if (redir_char == '>')
+		cmd->dirout = ft_strdup(fake_arg.dynamic_str.bytes);
+	else if (redir_char == '<')
+		cmd->dirin = ft_strdup(fake_arg.dynamic_str.bytes);
+	dstr_free(&fake_arg.dynamic_str);
+	return (input);
+}
+
+int	internal_parse_commands(t_cmd *cmd, char *input, char **env)
+{
 	t_arg	*arg;
 
-	cmd = allocate_cmd(NULL);
-	*head = cmd;
 	arg = cmd->args;
-
 	while (*input)
 	{
-		fprintf(stderr, "parse_commands: *input [%c]\n", *input);
 		if (*input == '|')
 		{
 			cmd = allocate_cmd(cmd);
 			arg = cmd->args;
-			input++;
-			while (ft_strchr(WHITESPACE_CHARSET, *input))
-				input++;
+			input = skip_whitespace(input + 1);
 		}
+		else if (*input == '$')
+			input = parse_dollar(arg, input + 1);
+		else if (*input == '<' || *input == '>')
+			input = parse_redir(cmd, input);
 		else if (ft_strchr(WHITESPACE_CHARSET, *input))
 		{
-			fprintf(stderr, "parse_commands: found space: arg: %s\n", arg->dynamic_str.bytes);
-			while (ft_strchr(WHITESPACE_CHARSET, *input))
-				input++;
-			if (*input != '|')
+			input = skip_whitespace(input);
+			if (*input != '|' && *input != '>' && *input != '<')
 				arg = allocate_arg(arg);
 		}
 		else
 			input = parse_argument(arg, input);
 	}
 	return (0);
+}
+
+int	parse_commands(t_cmd **head, char *input, char **env)
+{
+	if (*input == '|')
+	{
+		*head = NULL;
+		return (1); //ERROR_ORPHANED_PIPE;
+	}
+	*head = allocate_cmd(NULL);
+	return (internal_parse_commands(*head, input, env));
 }
