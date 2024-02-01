@@ -48,7 +48,7 @@ typedef struct s_cmd
 # define DIRIN_MODE_HEREDOC 1
 
 // env
-char		**copy_env(char **env, int additional_slot_count);
+int			get_env_size(char **env);
 char		*get_env_var(t_env *env, char *var_name);
 void		update_env_var(t_env *env, char *var);
 void		remove_env_var(t_env *env, char *var_name);

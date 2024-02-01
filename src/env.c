@@ -21,22 +21,25 @@ int	get_env_size(char **env)
 		size++;
 	return (size);
 }
-
-char	**copy_env(char **env, int additional_slot_count)
+void	append_env_var(t_env *env, char *var)
 {
 	int 	size;
 	int		i;
 	char	**new_env;
+	char	**cur_env;
 
-	size = get_env_size(env);
-	new_env = ft_calloc(sizeof(char *), size + additional_slot_count + 1);
+	cur_env = *env;
+	size = get_env_size(cur_env);
+	new_env = ft_calloc(sizeof(char *), size + 2);
 	i = 0;
 	while (i < size)
 	{
-		new_env[i] = env[i];
+		new_env[i] = cur_env[i];
 		i++;
 	}
-	return (new_env);
+	new_env[size] = ft_strdup(var);
+	free(cur_env);
+	*env = new_env;
 }
 
 char	*get_env_var(t_env *env, char *var_name)
@@ -57,33 +60,24 @@ char	*get_env_var(t_env *env, char *var_name)
 
 void	update_env_var(t_env *env, char *var)
 {
-	int		size;
-	char	**new_env;
 	char	**cur_env;
 	char	*equal;
 
-	fprintf(stderr, "update_env_var: enter var [%s]\n", var);
 	equal = ft_strchr(var, '=');
 	if (equal == NULL)
 		return ;
 	cur_env = *env;
-	fprintf(stderr, "update_env_var: loop [%s]\n", *cur_env);
 	while (*cur_env)
 	{
 		if (ft_strncmp(*cur_env, var, equal - var + 1) == 0)
 		{
-			fprintf(stderr, "update_env_var: found current var [%s]\n", *cur_env);
 			free(*cur_env);
 			*cur_env = ft_strdup(var);
 			return ;
 		}
 		cur_env++;
 	}
-	size = get_env_size(*env);
-	new_env = copy_env(*env, 1);
-	new_env[size] = ft_strdup(var);
-	free_array(*env);
-	*env = new_env;
+	append_env_var(env, var);
 }
 
 void	remove_env_var(t_env *env, char *var_name)
