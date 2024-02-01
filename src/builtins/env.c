@@ -12,11 +12,17 @@
 
 #include "minishell.h"
 
-int	builtin_env(char **args, char **env)
+int	builtin_env(char **args, t_env *the_env)
 {
-	int			i;
+	int		i;
+	char	**env;
 
+	env = *the_env;
 	i = 0;
-	while (env[i++] != NULL)
+	while (env[i] != NULL)
+	{
 		printf("%s\n", env[i]);
+		i++;
+	}
+	return (0);
 }

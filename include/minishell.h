@@ -21,8 +21,10 @@
 
 # define WHITESPACE_CHARSET " \t\n\v\f\r"
 
+typedef char **t_env;
+
 // pointed fonction for builtin
-typedef int	(*t_builtin)(char **, char **);
+typedef int	(*t_builtin)(char **, t_env *);
 
 typedef struct s_arg
 {
@@ -46,28 +48,29 @@ typedef struct s_cmd
 # define DIRIN_MODE_HEREDOC 1
 
 // env
-typedef char **t_env;
-
 char		**copy_env(char **env, int additional_slot_count);
 char		*get_env_var(t_env *env, char *var_name);
-t_env		*update_env_var(t_env *env, char *var_name, char *var_value);
+void		update_env_var(t_env *env, char *var);
 void		remove_env_var(t_env *env, char *var_name);
 
+// commands
 int			parse_commands(t_cmd **head, char *input);
 int			run_commands(t_cmd *commands, t_env *env);
 int			process_heredoc(t_cmd *commands);
 
+// other
 int			path_or_builtin(t_cmd *cmd);
 char		*join_path(char const *s1, char const *s2);
 void		parsing_signal_handler(int sig_num);
+void		free_array(char **array);
 
 // builtin
-int			builtin_echo(char **args, char **env);
-int			builtin_cd(char **args, char **env);
-int			builtin_pwd(char **args, char **env);
-int			builtin_export(char **args, char **env);
-int			builtin_unset(char **args, char **env);
-int			builtin_env(char **args, char **env);
-int			builtin_exit(char **args, char **env);
+int			builtin_echo(char **args, t_env *env);
+int			builtin_cd(char **args, t_env *env);
+int			builtin_pwd(char **args, t_env *env);
+int			builtin_export(char **args, t_env *env);
+int			builtin_unset(char **args, t_env *env);
+int			builtin_env(char **args, t_env *env);
+int			builtin_exit(char **args, t_env *env);
 
 #endif

@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int	builtin_echo(char **args, char **env)
+int	builtin_echo(char **args, t_env *env)
 {
 	int	i;
 	int	option_n;

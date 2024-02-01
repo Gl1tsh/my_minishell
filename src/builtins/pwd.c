@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int	builtin_pwd(char **args, char **env)
+int	builtin_pwd(char **args, t_env *env)
 {
 	printf("%s\n", getenv("PWD"));
 	return (0);

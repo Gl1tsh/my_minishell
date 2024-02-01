@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int	builtin_exit(char **args, char **env)
+int	builtin_exit(char **args, t_env *env)
 {
 	exit(0);
 }
