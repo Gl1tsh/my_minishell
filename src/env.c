@@ -29,8 +29,7 @@ char	**copy_env(char **env, int additional_slot_count)
 	char	**new_env;
 
 	size = get_env_size(env);
-	new_env = malloc(sizeof(char *) * (size + additional_slot_count + 1));
-	new_env[size] = NULL;
+	new_env = ft_calloc(sizeof(char *), size + additional_slot_count + 1);
 	i = 0;
 	while (i < size)
 	{
@@ -42,49 +41,61 @@ char	**copy_env(char **env, int additional_slot_count)
 
 char	*get_env_var(t_env *env, char *var_name)
 {
-	return NULL;
-}
-
-t_env	*update_env_var(t_env *env, char *var_name, char *var_value)
-{
-	int		size;
 	int		len;
-	char	**new_env;
 	char	**cur_env;
-	char	*var;
 
+	len = ft_strlen(var_name);
 	cur_env = *env;
 	while (*cur_env)
 	{
-		len = ft_strlen(var_name);
-		if (ft_strncmp(*cur_env, var_name, len) == 0 && *cur_env[len + 1] == '=')
+		if (ft_strncmp(*cur_env, var_name, len) == 0 && (*cur_env)[len] == '=')
+			return ((*cur_env) + len + 1);
+		cur_env++;
+	}
+	return (NULL);
+}
+
+void	update_env_var(t_env *env, char *var)
+{
+	int		size;
+	char	**new_env;
+	char	**cur_env;
+	char	*equal;
+
+	fprintf(stderr, "update_env_var: enter var [%s]\n", var);
+	equal = ft_strchr(var, '=');
+	if (equal == NULL)
+		return ;
+	cur_env = *env;
+	fprintf(stderr, "update_env_var: loop [%s]\n", *cur_env);
+	while (*cur_env)
+	{
+		if (ft_strncmp(*cur_env, var, equal - var + 1) == 0)
 		{
 			fprintf(stderr, "update_env_var: found current var [%s]\n", *cur_env);
-			return env;
+			free(*cur_env);
+			*cur_env = ft_strdup(var);
+			return ;
 		}
 		cur_env++;
 	}
 	size = get_env_size(*env);
 	new_env = copy_env(*env, 1);
-	len = ft_strlen(var_name) + 1 + ft_strlen(var_value);
-	var = ft_calloc(1, len + 1);
-	ft_strlcat(var, var_name, len);
-	ft_strlcat(var, "=", len);
-	ft_strlcat(var, var_value, len);
-	new_env[size] = var;
+	new_env[size] = ft_strdup(var);
+	free_array(*env);
 	*env = new_env;
 }
 
 void	remove_env_var(t_env *env, char *var_name)
 {
-	char	**cur_env;
 	int		len;
+	char	**cur_env;
 
+	len = ft_strlen(var_name);
 	cur_env = *env;
 	while (*cur_env)
 	{
-		len = ft_strlen(var_name);
-		if (ft_strncmp(*cur_env, var_name, len) == 0 && *cur_env[len + 1] == '=')
+		if (ft_strncmp(*cur_env, var_name, len) == 0 && (*cur_env)[len] == '=')
 		{
 			while (*cur_env)
 			{
