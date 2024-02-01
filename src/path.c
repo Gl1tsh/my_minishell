@@ -45,9 +45,26 @@ void	free_array(char **array)
 	free(array);
 }
 
+#include <string.h>
+#define ft_strcmp strcmp
 t_builtin	get_builtin(char *name)
 {
-	return NULL;
+	if (ft_strcmp(name, "exit") == 0)
+		return (builtin_exit);
+	else if (ft_strcmp(name, "echo") == 0)
+		return (builtin_echo);
+	else if (ft_strcmp(name, "pwd") == 0)
+		return (builtin_pwd);
+	else if (ft_strcmp(name, "cd") == 0)
+		return (builtin_cd);
+	else if (ft_strcmp(name, "env") == 0)
+		return (builtin_env);
+	else if (ft_strcmp(name, "export") == 0)
+		return (builtin_export);
+	else if (ft_strcmp(name, "unset") == 0)
+		return (builtin_unset);
+	else
+		return (NULL);
 }
 
 int	path_or_builtin(t_cmd *cmd)
