@@ -82,8 +82,9 @@ int	redirect(int oldfd, int newfd)
 
 int	exec_builtin(t_cmd *cmds, int in_fd, int *fd, t_env *env)
 {
-	int	exit_status;
-	int	tmp_fd[2];
+	int		exit_status;
+	int		tmp_fd[2];
+	char	**args;
 
 	tmp_fd[0] = dup(STDIN_FILENO);
 	tmp_fd[1] = dup(STDOUT_FILENO);
@@ -91,7 +92,9 @@ int	exec_builtin(t_cmd *cmds, int in_fd, int *fd, t_env *env)
 		return (1);
 	if (redirect(fd[1], STDOUT_FILENO) != 0)
 		return (1);
-	exit_status = cmds->builtin(convert_args(cmds->args), *env);
+	args = convert_args(cmds->args);
+	exit_status = cmds->builtin(args, env);
+	free_array(args);
 	if (redirect(tmp_fd[0], STDIN_FILENO) != 0)
 		return (1);
 	if (redirect(tmp_fd[1], STDOUT_FILENO) != 0)
