@@ -11,7 +11,7 @@ BUILDDIR = build/
 
 LIBFT = libft/libft.a
 
-SRCS = $(wildcard src/*.c)
+SRCS = $(shell find src -name '*.c')
 OBJS = $(patsubst src/%.c,$(BUILDDIR)%.o,$(SRCS))
 INCLUDES = -I./include -I./libft
 
@@ -38,7 +38,7 @@ $(LIBFT):
 	@make -C libft
 
 $(BUILDDIR)%.o: src/%.c
-	@mkdir -p $(BUILDDIR)
+	@mkdir -p $(BUILDDIR)builtins
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 	@$(call update_progress)
 
