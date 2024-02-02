@@ -11,39 +11,9 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "parsing.h"
 #include <fcntl.h>
-
-#define VARNAME_CHARSET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
-0123456789_"
-
-t_arg	*allocate_arg(t_arg *prev_arg)
-{
-	t_arg	*arg;
-
-	arg = ft_calloc(1, sizeof(t_arg));
-	if (prev_arg != NULL)
-		prev_arg->next = arg;
-	dstr_allocate(&arg->dynamic_str, 16);
-	return (arg);
-}
-
-t_cmd	*allocate_cmd(t_cmd *prev_cmd)
-{
-	t_cmd	*cmd;
-
-	cmd = ft_calloc(1, sizeof(t_cmd));
-	if (prev_cmd != NULL)
-		prev_cmd->next = cmd;
-	cmd->args = allocate_arg(NULL);
-	return (cmd);
-}
-
-char	*skip_whitespace(char *input)
-{
-	while (*input && ft_strchr(WHITESPACE_CHARSET, *input))
-		input++;
-	return (input);
-}
+#include <sys/errno.h>
 
 char	*parse_dollar(t_arg *arg, char *input, t_env *env)
 {
@@ -159,7 +129,8 @@ int	parse_commands(t_cmd **head, char *input, t_env *env)
 	if (*input == '|')
 	{
 		*head = NULL;
-		return (1); //ERROR_ORPHANED_PIPE;
+		errno = EINVAL;
+		return (perror_return("parsing", 1));
 	}
 	*head = allocate_cmd(NULL);
 	return (internal_parse_commands(*head, input, env));
