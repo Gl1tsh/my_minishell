@@ -12,8 +12,6 @@
 
 #include "minishell.h"
 
-#include <string.h>
-#define ft_strcmp strcmp
 void	update_env_pwd(t_env *env)
 {
 	char	*cwd;
@@ -54,7 +52,7 @@ int	builtin_cd(char **args, t_env *env)
 			failed = chdir(args[1]);
 	}
 	if (failed)
-		return perror_return("cd", 1);
+		return (perror_return("cd", 1));
 	update_env_pwd(env);
 	return (0);
 }

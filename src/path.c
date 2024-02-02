@@ -45,8 +45,6 @@ void	free_array(char **array)
 	free(array);
 }
 
-#include <string.h>
-#define ft_strcmp strcmp
 t_builtin	get_builtin(char *name)
 {
 	if (ft_strcmp(name, "exit") == 0)
