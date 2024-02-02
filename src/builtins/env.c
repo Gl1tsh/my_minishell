@@ -17,6 +17,7 @@ int	builtin_env(char **args, t_env *the_env)
 	int		i;
 	char	**env;
 
+	(void)args;
 	env = *the_env;
 	i = 0;
 	while (env[i] != NULL)
