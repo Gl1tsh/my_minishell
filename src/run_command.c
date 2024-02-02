@@ -108,7 +108,7 @@ int	exec_cmd(t_cmd *cmds, int in_fd, int *fd, t_env *env)
 
 	pid = fork();
 	if (pid == -1)
-		return (perror_return("exec_cmd", 1));
+		return (perror_return("exec_cmd", -1));
 	if (pid == 0)
 	{
 		safe_close(fd[0]);
@@ -137,7 +137,6 @@ int	setup_pipe(t_cmd *cmds, int out_fd, int *fd)
 		return (perror_return("setup_pipe", 1));
 	return (0);
 }
-
 int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, t_env *env)
 {
 	int	fd[2];
@@ -148,15 +147,24 @@ int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, t_env *env)
 		return (1);
 	if (cmds->builtin != NULL)
 	{
-		exec_builtin(cmds, in_fd, fd, env);
-		pid = 0;
+		pid = exec_builtin(cmds, in_fd, fd, env);
+		if (pid != 0)
+			return pid;
 	}
 	else
+	{
 		pid = exec_cmd(cmds, in_fd, fd, env);
+		if (pid < 0)
+			return 357;
+	}
 	if (cmds->next != NULL)
 		return (exec_pipeline(cmds->next, fd[0], out_fd, env));
+	fprintf(stderr, "exec_pipeline: waiting...\n");
 	waitpid(pid, &status, 0);
-	return (0);
+	if (WIFSIGNALED(status))
+		return (128 + WTERMSIG(status));
+	//if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
 }
 
 int	setup_redirections(t_cmd *cmds, int *fd)

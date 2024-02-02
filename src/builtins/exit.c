@@ -14,5 +14,5 @@
 
 int	builtin_exit(char **args, t_env *env)
 {
-	exit(0);
+	return (-1);
 }
