@@ -81,20 +81,6 @@ int	free_commands(t_cmd *cmds, int exit_status, t_env *env)
 	return (set_exit_status(exit_status, env));
 }
 
-int	which_commands(t_cmd *cmds, t_env *env)
-{
-	int	exit_status;
-
-	while (cmds != NULL)
-	{
-		exit_status = path_or_builtin(cmds, env);
-		if (exit_status != 0)
-			return (exit_status);
-		cmds = cmds->next;
-	}
-	return (0);
-}
-
 int	launch_commands(char *input, t_env *env)
 {
 	int		exit_status;

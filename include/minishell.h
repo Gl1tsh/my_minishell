@@ -57,9 +57,9 @@ void		remove_env_var(t_env *env, char *var_name);
 int			parse_commands(t_cmd **head, char *input, t_env *env);
 int			run_commands(t_cmd *commands, t_env *env);
 int			process_heredoc(t_cmd *commands);
+int			which_commands(t_cmd *commands, t_env *env);
 
 // other
-int			path_or_builtin(t_cmd *cmd, t_env *env);
 char		*join_path(char const *s1, char const *s2);
 void		parsing_signal_handler(int sig_num);
 void		free_array(char **array);

@@ -65,15 +65,11 @@ t_builtin	get_builtin(char *name)
 		return (NULL);
 }
 
-int	path_or_builtin(t_cmd *cmd, t_env *env)
+int	get_path(t_cmd *cmd, t_env *env)
 {
 	char	**paths;
-	char	*complete_path;
 	int		i;
 
-	cmd->builtin = get_builtin(cmd->args->dynamic_str.bytes);
-	if (cmd->builtin != NULL)
-		return (0);
 	if (ft_strchr(cmd->args->dynamic_str.bytes, '/') != NULL)
 	{
 		if (access(cmd->args->dynamic_str.bytes, R_OK | X_OK) != 0)
@@ -85,16 +81,36 @@ int	path_or_builtin(t_cmd *cmd, t_env *env)
 	i = 0;
 	while (paths[i] != NULL)
 	{
-		complete_path = join_path(paths[i], cmd->args->dynamic_str.bytes);
-		if (access(complete_path, R_OK | X_OK) == 0)
+		cmd->path = join_path(paths[i], cmd->args->dynamic_str.bytes);
+		if (access(cmd->path, R_OK | X_OK) == 0)
 		{
-			cmd->path = complete_path;
 			free_array(paths);
 			return (0);
 		}
-		free(complete_path);
+		free(cmd->path);
 		i++;
 	}
 	free_array(paths);
 	return (127);
+}
+
+int	which_commands(t_cmd *cmds, t_env *env)
+{
+	int	exit_status;
+
+	while (cmds != NULL)
+	{
+		cmds->builtin = get_builtin(cmds->args->dynamic_str.bytes);
+		if (cmds->builtin == NULL)
+		{
+			exit_status = get_path(cmds, env);
+			if (exit_status != 0)
+			{
+				cmds->path = NULL;
+				return (exit_status);
+			}
+		}
+		cmds = cmds->next;
+	}
+	return (0);
 }
