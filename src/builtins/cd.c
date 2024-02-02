@@ -36,22 +36,25 @@ void	update_env_pwd(t_env *env)
 int	builtin_cd(char **args, t_env *env)
 {
 	char	*path;
+	int		failed;
 
 	if (args[1] == NULL)
-		chdir(get_env_var(env, "HOME"));
+		failed = chdir(get_env_var(env, "HOME"));
 	else
 	{
 		if (args[1][0] == '~' && args[1][1] == '\0')
-			chdir(get_env_var(env, "HOME"));
+			failed = chdir(get_env_var(env, "HOME"));
 		else if (args[1][0] == '~')
 		{
 			path = ft_strjoin(get_env_var(env, "HOME"), args[1] + 1);
-			chdir(path);
+			failed = chdir(path);
 			free(path);
 		}
 		else
-			chdir(args[1]);
+			failed = chdir(args[1]);
 	}
+	if (failed)
+		return perror_return("cd", 1);
 	update_env_pwd(env);
 	return (0);
 }
