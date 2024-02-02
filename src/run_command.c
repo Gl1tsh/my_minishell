@@ -94,7 +94,7 @@ int	exec_builtin(t_cmd *cmds, int in_fd, int *fd, t_env *env)
 		return (1);
 	args = convert_args(cmds->args);
 	exit_status = cmds->builtin(args, env);
-	free_array(args);
+	free(args);
 	if (redirect(tmp_fd[0], STDIN_FILENO) != 0)
 		return (1);
 	if (redirect(tmp_fd[1], STDOUT_FILENO) != 0)
