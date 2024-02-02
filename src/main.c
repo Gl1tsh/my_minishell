@@ -108,14 +108,26 @@ char	**dup_env(char **env)
 	char	**new_env;
 
 	size = get_env_size(env);
-	new_env = ft_calloc(sizeof(char *), size + 1);
+	new_env = ft_calloc(sizeof(char *), size + 2);
 	i = 0;
 	while (i < size)
 	{
 		new_env[i] = ft_strdup(env[i]);
 		i++;
 	}
+	new_env[size] = ft_strdup("?=0");
 	return (new_env);
+}
+
+void	set_exit_status(int exit_status, t_env *env)
+{
+	char	*value;
+	char	*var;
+
+	value = ft_itoa(exit_status);
+	var = ft_strjoin("?=", value);
+	free(value);
+	update_env_var(env, var);
 }
 
 int	main(int argc, char **argv, char **org_env)
@@ -143,7 +155,7 @@ int	main(int argc, char **argv, char **org_env)
 		if (*clean_input != '\0')
 		{
 			add_history(input);
-			launch_commands(clean_input, &env);
+			set_exit_status(launch_commands(clean_input, &env), &env);
 		}
 		free(prompt);
 		free(input);

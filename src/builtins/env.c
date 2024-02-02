@@ -21,7 +21,8 @@ int	builtin_env(char **args, t_env *the_env)
 	i = 0;
 	while (env[i] != NULL)
 	{
-		printf("%s\n", env[i]);
+		if (env[i][0] != '?')
+			printf("%s\n", env[i]);
 		i++;
 	}
 	return (0);

@@ -51,6 +51,13 @@ char	*parse_dollar(t_arg *arg, char *input, t_env *env)
 	char	*var_name;
 	char	*var_value;
 
+	if (*input == '?')
+	{
+		var_value = get_env_var(env, "?");
+		if (var_value != NULL)
+			dstr_append(&arg->dynamic_str, var_value, ft_strlen(var_value));
+		return (input + 1);
+	}
 	var_name_start = input;
 	while (*input && ft_strchr(VARNAME_CHARSET, *input))
 		input++;
