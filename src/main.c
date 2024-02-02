@@ -42,7 +42,19 @@ void print_commands(t_cmd *cmds)
 	}
 }
 
-int	free_commands(t_cmd *cmds, int exit_status)
+int	set_exit_status(int exit_status, t_env *env)
+{
+	char	*value;
+	char	*var;
+
+	value = ft_itoa(exit_status);
+	var = ft_strjoin("?=", value);
+	free(value);
+	update_env_var(env, var);
+	return (exit_status);
+}
+
+int	free_commands(t_cmd *cmds, int exit_status, t_env *env)
 {
 	t_arg	*arg;
 	t_arg	*next_arg;
@@ -65,7 +77,7 @@ int	free_commands(t_cmd *cmds, int exit_status)
 		free(cmds);
 		cmds = next_cmd;
 	}
-	return (exit_status);
+	return (set_exit_status(exit_status, env));
 }
 
 int	which_commands(t_cmd *cmds, t_env *env)
@@ -89,16 +101,16 @@ int	launch_commands(char *input, t_env *env)
 
 	exit_status = parse_commands(&cmds, input, env);
 	if (exit_status != 0)
-		return (free_commands(cmds, exit_status));
+		return (free_commands(cmds, exit_status, env));
 	print_commands(cmds);
 	exit_status = process_heredoc(cmds);
 	if (exit_status != 0)
-		return (free_commands(cmds, exit_status));
+		return (free_commands(cmds, exit_status, env));
 	exit_status = which_commands(cmds, env);
 	if (exit_status != 0)
-		return (free_commands(cmds, exit_status));
+		return (free_commands(cmds, exit_status, env));
 	exit_status = run_commands(cmds, env);
-	return (free_commands(cmds, exit_status));
+	return (free_commands(cmds, exit_status, env));
 }
 
 char	**dup_env(char **env)
@@ -119,42 +131,33 @@ char	**dup_env(char **env)
 	return (new_env);
 }
 
-void	set_exit_status(int exit_status, t_env *env)
-{
-	char	*value;
-	char	*var;
-
-	value = ft_itoa(exit_status);
-	var = ft_strjoin("?=", value);
-	free(value);
-	update_env_var(env, var);
-}
-
 void	repl(t_env *env)
 {
 	char	*input;
 	char	*prompt;
 	char	*clean_input;
+	int		exit_requested;
 
-	while (1)
+	prompt = NULL;
+	exit_requested = 0;
+	while (!exit_requested)
 	{
+		free(prompt);
 		prompt = ft_strjoin(get_env_var(env, "PWD"), " > ");
 		input = readline(prompt);
 		if (input == NULL)
-		{
-			free(prompt);
 			break ;
-		}
 		clean_input = ft_strtrim(input, WHITESPACE_CHARSET);
-		if (*clean_input != '\0')
+		if (clean_input != NULL && *clean_input != '\0')
 		{
 			add_history(input);
-			set_exit_status(launch_commands(clean_input, env), env);
+			if (launch_commands(clean_input, env) < 0)
+				exit_requested = 1;
 		}
-		free(prompt);
 		free(input);
 		free(clean_input);
 	}
+	free(prompt);
 }
 
 int	main(int argc, char **argv, char **org_env)
