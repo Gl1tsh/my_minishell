@@ -23,38 +23,6 @@ void	parsing_signal_handler(int sig_num)
 	rl_redisplay();
 }
 
-void print_commands(t_cmd *cmds)
-{
-	t_arg	*arg;
-
-	while (cmds != NULL)
-	{
-		fprintf(stderr, "cmd: args %p\n", cmds->args);
-		fprintf(stderr, "  dirin:  [%s]\n", cmds->dirin);
-		fprintf(stderr, "  dirout: [%s]\n", cmds->dirout);
-		arg = cmds->args;
-		while (arg != NULL)
-		{
-			fprintf(stderr, "  arg: %p [%s]\n", arg->dynamic_str.bytes, arg->dynamic_str.bytes);
-			arg = arg->next;
-		}
-		cmds = cmds->next;
-	}
-}
-
-int	set_exit_status(int exit_status, t_env *env)
-{
-	char	*value;
-	char	*var;
-
-	value = ft_itoa(exit_status);
-	var = ft_strjoin("?=", value);
-	update_env_var(env, var);
-	free(var);
-	free(value);
-	return (exit_status);
-}
-
 int	free_commands(t_cmd *cmds, int exit_status, t_env *env)
 {
 	t_arg	*arg;
@@ -98,24 +66,6 @@ int	launch_commands(char *input, t_env *env)
 		return (free_commands(cmds, exit_status, env));
 	exit_status = run_commands(cmds, env);
 	return (free_commands(cmds, exit_status, env));
-}
-
-char	**dup_env(char **env)
-{
-	int		size;
-	int		i;
-	char	**new_env;
-
-	size = get_env_size(env);
-	new_env = ft_calloc(sizeof(char *), size + 2);
-	i = 0;
-	while (i < size)
-	{
-		new_env[i] = ft_strdup(env[i]);
-		i++;
-	}
-	new_env[size] = ft_strdup("?=0");
-	return (new_env);
 }
 
 void	repl(t_env *env)

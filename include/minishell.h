@@ -58,6 +58,7 @@ int			parse_commands(t_cmd **head, char *input, t_env *env);
 int			run_commands(t_cmd *commands, t_env *env);
 int			process_heredoc(t_cmd *commands);
 int			which_commands(t_cmd *commands, t_env *env);
+void		print_commands(t_cmd *commands);
 
 // other
 char		*join_path(char const *s1, char const *s2);
@@ -65,6 +66,8 @@ void		parsing_signal_handler(int sig_num);
 void		free_array(char **array);
 int			perror_return(char *message, int exit_status);
 int			redirect(int oldfd, int newfd);
+int			set_exit_status(int exit_status, t_env *env);
+char		**dup_env(char **env);
 
 // builtin
 int			builtin_echo(char **args, t_env *env);
