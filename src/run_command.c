@@ -144,7 +144,6 @@ int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, t_env *env)
 	int	pid;
 	int	status;
 
-	fprintf(stderr, "exec_pipeline: running\n");
 	if (setup_pipe(cmds, out_fd, fd) != 0)
 		return (1);
 	if (cmds->builtin != NULL)
