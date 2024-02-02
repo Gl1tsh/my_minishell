@@ -14,6 +14,6 @@
 
 int	builtin_pwd(char **args, t_env *env)
 {
-	printf("%s\n", getenv("PWD"));
+	printf("%s\n", get_env_var(env, "PWD"));
 	return (0);
 }

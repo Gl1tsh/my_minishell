@@ -12,20 +12,46 @@
 
 #include "minishell.h"
 
+#include <string.h>
+#define ft_strcmp strcmp
+void	update_env_pwd(t_env *env)
+{
+	char	*cwd;
+	char	*pwd;
+	char	*old_pwd;
+
+	cwd = getcwd(NULL, 0);
+	if (ft_strcmp(cwd, get_env_var(env, "PWD")) != 0)
+	{
+		old_pwd = ft_strjoin("OLDPWD=", get_env_var(env, "PWD"));
+		pwd = ft_strjoin("PWD=", cwd);
+		update_env_var(env, old_pwd);
+		update_env_var(env, pwd);
+		free(old_pwd);
+		free(pwd);
+	}
+	free(cwd);
+}
+
 int	builtin_cd(char **args, t_env *env)
 {
+	char	*path;
+
 	if (args[1] == NULL)
-		chdir(getenv("HOME"));
+		chdir(get_env_var(env, "HOME"));
 	else
 	{
-		if (args[1][0] == '~' && args[1][1] != '\0')
-		{
-			chdir(getenv("HOME"));
-		}
+		if (args[1][0] == '~' && args[1][1] == '\0')
+			chdir(get_env_var(env, "HOME"));
 		else if (args[1][0] == '~')
-			chdir(ft_strjoin(getenv("HOME"), args[1] + 1));
+		{
+			path = ft_strjoin(get_env_var(env, "HOME"), args[1] + 1);
+			chdir(path);
+			free(path);
+		}
 		else
 			chdir(args[1]);
 	}
+	update_env_pwd(env);
 	return (0);
 }
