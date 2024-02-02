@@ -14,16 +14,17 @@
 
 int	get_env_size(char **env)
 {
-	int size;
+	int	size;
 
 	size = 0;
 	while (*env++)
 		size++;
 	return (size);
 }
+
 void	append_env_var(t_env *env, char *var)
 {
-	int 	size;
+	int		size;
 	int		i;
 	char	**new_env;
 	char	**cur_env;
