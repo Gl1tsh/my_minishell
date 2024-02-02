@@ -14,6 +14,12 @@
 #include <readline/readline.h>
 #include <fcntl.h>
 
+void	heredoc_signal_handler(int sig_num)
+{
+	(void)sig_num;
+	close(0);
+}
+
 char	*generate_pid_string(char *target)
 {
 	int	pid;
@@ -30,25 +36,30 @@ char	*generate_pid_string(char *target)
 	return (target);
 }
 
-#include <string.h>
-#define ft_strcmp strcmp
-t_dstr	read_heredoc(char *eos)
+int	read_heredoc(t_dstr *heredoc, char *eos)
 {
-	t_dstr	heredoc;
 	char	*line;
+	int		stdin_copy;
 
-	dstr_allocate(&heredoc, 128);
+	stdin_copy = dup(STDIN_FILENO);
+	signal(SIGINT, heredoc_signal_handler);
 	while (1)
 	{
 		line = readline("heredoc> ");
 		if (line == NULL)
-			return (heredoc);
+		{
+			redirect(stdin_copy, STDIN_FILENO);
+			signal(SIGINT, parsing_signal_handler);
+			return (1);
+		}
 		if (ft_strcmp(line, eos) == 0)
 			break ;
-		dstr_append(&heredoc, line, ft_strlen(line));
-		dstr_append(&heredoc, "\n", 1);
+		dstr_append(heredoc, line, ft_strlen(line));
+		dstr_append(heredoc, "\n", 1);
 	}
-	return (heredoc);
+	close(stdin_copy);
+	signal(SIGINT, parsing_signal_handler);
+	return (0);
 }
 
 int	process_heredoc(t_cmd *cmds)
@@ -61,7 +72,12 @@ int	process_heredoc(t_cmd *cmds)
 
 	if (cmds->dirin != NULL && cmds->dirin_mode == DIRIN_MODE_HEREDOC)
 	{
-		heredoc = read_heredoc(cmds->dirin);
+		dstr_allocate(&heredoc, 128);
+		if (read_heredoc(&heredoc, cmds->dirin) != 0)
+		{
+			dstr_free(&heredoc);
+			return (1);
+		}
 		temp_dirname = getenv("TMPDIR");
 		if (temp_dirname == NULL)
 			temp_dirname = "/tmp";

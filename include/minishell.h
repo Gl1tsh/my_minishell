@@ -64,6 +64,7 @@ char		*join_path(char const *s1, char const *s2);
 void		parsing_signal_handler(int sig_num);
 void		free_array(char **array);
 int			perror_return(char *message, int exit_status);
+int			redirect(int oldfd, int newfd);
 
 // builtin
 int			builtin_echo(char **args, t_env *env);
