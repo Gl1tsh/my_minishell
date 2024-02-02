@@ -49,8 +49,9 @@ int	set_exit_status(int exit_status, t_env *env)
 
 	value = ft_itoa(exit_status);
 	var = ft_strjoin("?=", value);
-	free(value);
 	update_env_var(env, var);
+	free(var);
+	free(value);
 	return (exit_status);
 }
 
