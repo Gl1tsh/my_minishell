@@ -74,8 +74,10 @@ int	read_heredoc(t_dstr *heredoc, char *eos)
 			break ;
 		dstr_append(heredoc, line, ft_strlen(line));
 		dstr_append(heredoc, "\n", 1);
+		free(line);
 	}
 	close(stdin_copy);
+	free(line);
 	signal(SIGINT, parsing_signal_handler);
 	return (0);
 }
