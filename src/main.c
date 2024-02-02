@@ -68,13 +68,13 @@ int	free_commands(t_cmd *cmds, int exit_status)
 	return (exit_status);
 }
 
-int	which_commands(t_cmd *cmds)
+int	which_commands(t_cmd *cmds, t_env *env)
 {
 	int	exit_status;
 
 	while (cmds != NULL)
 	{
-		exit_status = path_or_builtin(cmds);
+		exit_status = path_or_builtin(cmds, env);
 		if (exit_status != 0)
 			return (exit_status);
 		cmds = cmds->next;
@@ -87,18 +87,35 @@ int	launch_commands(char *input, t_env *env)
 	int	exit_status;
 	t_cmd	*cmds;
 
-	exit_status = parse_commands(&cmds, input);
+	exit_status = parse_commands(&cmds, input, env);
 	if (exit_status != 0)
 		return (free_commands(cmds, exit_status));
 	print_commands(cmds);
 	exit_status = process_heredoc(cmds);
 	if (exit_status != 0)
 		return (free_commands(cmds, exit_status));
-	exit_status = which_commands(cmds);
+	exit_status = which_commands(cmds, env);
 	if (exit_status != 0)
 		return (free_commands(cmds, exit_status));
 	exit_status = run_commands(cmds, env);
 	return (free_commands(cmds, exit_status));
+}
+
+char	**dup_env(char **env)
+{
+	int 	size;
+	int		i;
+	char	**new_env;
+
+	size = get_env_size(env);
+	new_env = ft_calloc(sizeof(char *), size + 1);
+	i = 0;
+	while (i < size)
+	{
+		new_env[i] = ft_strdup(env[i]);
+		i++;
+	}
+	return (new_env);
 }
 
 int	main(int argc, char **argv, char **org_env)
@@ -110,12 +127,12 @@ int	main(int argc, char **argv, char **org_env)
 
 	(void)argc;
 	(void)argv;
-	env = copy_env(org_env, 0);
+	env = dup_env(org_env);
 	signal(SIGINT, parsing_signal_handler);
 	signal(SIGQUIT, SIG_IGN);
 	while (1)
 	{
-		prompt = ft_strjoin(getenv("PWD"), " > ");
+		prompt = ft_strjoin(get_env_var(&env, "PWD"), " > ");
 		input = readline(prompt);
 		if (input == NULL)
 		{
@@ -132,5 +149,6 @@ int	main(int argc, char **argv, char **org_env)
 		free(input);
 		free(clean_input);
 	}
+	free_array(env);
 	return (0);
 }

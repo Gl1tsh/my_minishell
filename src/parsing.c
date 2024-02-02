@@ -45,29 +45,24 @@ char	*skip_whitespace(char *input)
 	return (input);
 }
 
-char	*parse_dollar(t_arg *arg, char *input)
+char	*parse_dollar(t_arg *arg, char *input, t_env *env)
 {
 	char	*var_name_start;
 	char	*var_name;
 	char	*var_value;
 
-	fprintf(stderr, "parse_dollar: enter [%s]\n", input);
 	var_name_start = input;
-	while (ft_strchr(VARNAME_CHARSET, *input))
+	while (*input && ft_strchr(VARNAME_CHARSET, *input))
 		input++;
-
-	fprintf(stderr, "parse_dollar: varname end [%s]\n", input);
 	var_name = ft_strndup(var_name_start, input - var_name_start);
-	var_value = getenv(var_name);
-	fprintf(stderr, "parse_dollar: varname [%s] varvalue [%s]\n", var_name, var_value);
+	var_value = get_env_var(env, var_name);
 	if (var_value != NULL)
 		dstr_append(&arg->dynamic_str, var_value, ft_strlen(var_value));
 	free(var_name);
-	fprintf(stderr, "parse_dollar: leaving\n");
 	return (input);
 }
 
-char	*parse_argument(t_arg *arg, char *input)
+char	*parse_argument(t_arg *arg, char *input, t_env *env)
 {
 	if (*input == '"')
 	{
@@ -75,7 +70,7 @@ char	*parse_argument(t_arg *arg, char *input)
 		while (*input != '"')
 		{
 			if (*input == '$')
-				input = parse_dollar(arg, input + 1);
+				input = parse_dollar(arg, input + 1, env);
 			else
 				dstr_append(&arg->dynamic_str, input++, 1);
 		}
@@ -95,7 +90,7 @@ char	*parse_argument(t_arg *arg, char *input)
 	}
 }
 
-char	*parse_redir(t_cmd *cmd, char *input)
+char	*parse_redir(t_cmd *cmd, char *input, t_env *env)
 {
 	t_arg	fake_arg;
 	char	redir_char;
@@ -113,7 +108,7 @@ char	*parse_redir(t_cmd *cmd, char *input)
 	dstr_allocate(&fake_arg.dynamic_str, 16);
 	input = skip_whitespace(input);
 	while (*input && !ft_strchr(WHITESPACE_CHARSET "|<>", *input))
-		input = parse_argument(&fake_arg, input);
+		input = parse_argument(&fake_arg, input, env);
 	input = skip_whitespace(input);
 	if (redir_char == '>')
 		cmd->dirout = ft_strdup(fake_arg.dynamic_str.bytes);
@@ -123,7 +118,7 @@ char	*parse_redir(t_cmd *cmd, char *input)
 	return (input);
 }
 
-int	internal_parse_commands(t_cmd *cmd, char *input)
+int	internal_parse_commands(t_cmd *cmd, char *input, t_env *env)
 {
 	t_arg	*arg;
 
@@ -137,9 +132,9 @@ int	internal_parse_commands(t_cmd *cmd, char *input)
 			input = skip_whitespace(input + 1);
 		}
 		else if (*input == '$')
-			input = parse_dollar(arg, input + 1);
+			input = parse_dollar(arg, input + 1, env);
 		else if (*input == '<' || *input == '>')
-			input = parse_redir(cmd, input);
+			input = parse_redir(cmd, input, env);
 		else if (ft_strchr(WHITESPACE_CHARSET, *input))
 		{
 			input = skip_whitespace(input);
@@ -147,12 +142,12 @@ int	internal_parse_commands(t_cmd *cmd, char *input)
 				arg = allocate_arg(arg);
 		}
 		else
-			input = parse_argument(arg, input);
+			input = parse_argument(arg, input, env);
 	}
 	return (0);
 }
 
-int	parse_commands(t_cmd **head, char *input)
+int	parse_commands(t_cmd **head, char *input, t_env *env)
 {
 	if (*input == '|')
 	{
@@ -160,5 +155,5 @@ int	parse_commands(t_cmd **head, char *input)
 		return (1); //ERROR_ORPHANED_PIPE;
 	}
 	*head = allocate_cmd(NULL);
-	return (internal_parse_commands(*head, input));
+	return (internal_parse_commands(*head, input, env));
 }

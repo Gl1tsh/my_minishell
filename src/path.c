@@ -67,7 +67,7 @@ t_builtin	get_builtin(char *name)
 		return (NULL);
 }
 
-int	path_or_builtin(t_cmd *cmd)
+int	path_or_builtin(t_cmd *cmd, t_env *env)
 {
 	char	**paths;
 	char	*complete_path;
@@ -83,7 +83,7 @@ int	path_or_builtin(t_cmd *cmd)
 		cmd->path = ft_strdup(cmd->args->dynamic_str.bytes);
 		return (0);
 	}
-	paths = ft_split(getenv("PATH"), ':');
+	paths = ft_split(get_env_var(env, "PATH"), ':');
 	i = 0;
 	while (paths[i] != NULL)
 	{
