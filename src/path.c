@@ -79,7 +79,7 @@ int	path_or_builtin(t_cmd *cmd, t_env *env)
 	if (ft_strchr(cmd->args->dynamic_str.bytes, '/') != NULL)
 	{
 		if (access(cmd->args->dynamic_str.bytes, R_OK | X_OK) != 0)
-			return (1);
+			return (126);
 		cmd->path = ft_strdup(cmd->args->dynamic_str.bytes);
 		return (0);
 	}
@@ -98,5 +98,5 @@ int	path_or_builtin(t_cmd *cmd, t_env *env)
 		i++;
 	}
 	free_array(paths);
-	return (1);
+	return (127);
 }
