@@ -107,7 +107,7 @@ int	which_commands(t_cmd *cmds, t_env *env)
 			if (exit_status != 0)
 			{
 				cmds->path = NULL;
-				return (exit_status);
+				return (perror_return("command not found", exit_status));
 			}
 		}
 		cmds = cmds->next;
