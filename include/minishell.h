@@ -23,10 +23,10 @@
 # define VARNAME_CHARSET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
 0123456789_"
 
-typedef char **t_env;
+typedef char	**t_env;
 
 // pointed fonction for builtin
-typedef int	(*t_builtin)(char **, t_env *);
+typedef int		(*t_builtin)(char **, t_env *);
 
 typedef struct s_arg
 {
@@ -37,14 +37,14 @@ typedef struct s_arg
 // struct for one command
 typedef struct s_cmd
 {
-	char			*path; //real cmd path
-	t_arg			*args; // all arguments from cmd line
-	t_builtin		builtin; //pointer to builtin
-	char			*dirin; // redirect in
-	char			*dirout; // redirect out
+	char			*path;
+	t_arg			*args;
+	t_builtin		builtin;
+	char			*dirin;
+	char			*dirout;
 	int				dirin_mode;
 	int				dirout_mode;
-	struct s_cmd	*next; // chained list of cmds
+	struct s_cmd	*next;
 }	t_cmd;
 
 # define DIRIN_MODE_HEREDOC 1
