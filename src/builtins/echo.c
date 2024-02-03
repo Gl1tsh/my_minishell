@@ -18,7 +18,7 @@ int	builtin_echo(char **args, t_env *env)
 	int	option_n;
 
 	(void)env;
-	option_n = ft_strncmp(args[1], "-n", 2) == 0;
+	option_n = args[1] && ft_strncmp(args[1], "-n", 2) == 0;
 	if (option_n)
 		i = 2;
 	else
