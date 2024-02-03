@@ -57,7 +57,7 @@ int	launch_commands(char *input, t_env *env)
 	exit_status = parse_commands(&cmds, input, env);
 	if (exit_status != 0)
 		return (free_commands(cmds, exit_status, env));
-	print_commands(cmds);
+	//print_commands(cmds);
 	exit_status = process_heredoc(cmds);
 	if (exit_status != 0)
 		return (free_commands(cmds, exit_status, env));
@@ -100,6 +100,7 @@ void	repl(t_env *env)
 int	main(int argc, char **argv, char **org_env)
 {
 	t_env	env;
+	int		exit_status;
 
 	(void)argc;
 	(void)argv;
@@ -107,6 +108,9 @@ int	main(int argc, char **argv, char **org_env)
 	signal(SIGINT, parsing_signal_handler);
 	signal(SIGQUIT, SIG_IGN);
 	repl(&env);
+	exit_status = ft_atoi(get_env_var(&env, "?"));
+	if (exit_status < 0)
+		exit_status = 0;
 	free_array(env);
-	return (0);
+	return (exit_status);
 }
