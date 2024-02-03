@@ -126,11 +126,14 @@ int	internal_parse_commands(t_cmd *cmd, char *input, t_env *env)
 
 int	parse_commands(t_cmd **head, char *input, t_env *env)
 {
-	if (*input == '|')
+	int	len;
+
+	len = ft_strlen(input);
+	if (input[0] == '|' || input[len - 1] == '|')
 	{
 		*head = NULL;
 		errno = EINVAL;
-		return (perror_return("parsing", 1));
+		return (perror_return("parsing pipe", 1));
 	}
 	*head = allocate_cmd(NULL);
 	return (internal_parse_commands(*head, input, env));
