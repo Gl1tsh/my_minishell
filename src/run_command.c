@@ -159,7 +159,6 @@ int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, t_env *env)
 	}
 	if (cmds->next != NULL)
 		return (exec_pipeline(cmds->next, fd[0], out_fd, env));
-	fprintf(stderr, "exec_pipeline: waiting...\n");
 	waitpid(pid, &status, 0);
 	if (WIFSIGNALED(status))
 		return (128 + WTERMSIG(status));
@@ -172,6 +171,8 @@ int	setup_redirections(t_cmd *cmds, int *fd)
 	if (cmds->dirin != NULL)
 	{
 		fd[0] = open(cmds->dirin, O_RDONLY);
+		if (fd[0] < 0)
+			return (perror_return("redirection", 1));
 		if (cmds->dirin_mode == DIRIN_MODE_HEREDOC)
 			unlink(cmds->dirin);
 		fd[2] = dup(STDIN_FILENO);
@@ -181,6 +182,12 @@ int	setup_redirections(t_cmd *cmds, int *fd)
 	if (cmds->dirout != NULL)
 	{
 		fd[1] = open(cmds->dirout, cmds->dirout_mode, 0777);
+		if (fd[1] < 0)
+		{
+			safe_close(fd[0]);
+			safe_close(fd[2]);
+			return (perror_return("redirection", 1));
+		}
 		fd[3] = dup(STDOUT_FILENO);
 	}
 	return (0);
