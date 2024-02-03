@@ -24,10 +24,12 @@ int	builtin_echo(char **args, t_env *env)
 	else
 		i = 1;
 	while (args[i])
+	{
 		if (args[i + 1])
 			printf("%s ", args[i++]);
 		else
 			printf("%s", args[i++]);
+	}
 	if (!option_n)
 		printf("\n");
 	return (0);
