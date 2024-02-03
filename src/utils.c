@@ -78,3 +78,9 @@ int	is_valid_var_name(char *var)
 	}
 	return (1);
 }
+
+int	perror_return(char *message, int exit_status)
+{
+	perror(message);
+	return (exit_status);
+}

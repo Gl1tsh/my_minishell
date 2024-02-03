@@ -71,6 +71,8 @@ int			redirect(int oldfd, int newfd);
 int			set_exit_status(int exit_status, t_env *env);
 char		**dup_env(char **env);
 int			is_valid_var_name(char *var);
+int			exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, t_env *env);
+void		safe_close(int fd);
 
 // builtin
 int			builtin_echo(char **args, t_env *env);
