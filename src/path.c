@@ -68,16 +68,13 @@ t_builtin	get_builtin(char *name)
 int	get_path(t_cmd *cmd, t_env *env)
 {
 	char	**paths;
+	char	*env_path;
 	int		i;
 
-	if (ft_strchr(cmd->args->dynamic_str.bytes, '/') != NULL)
-	{
-		if (access(cmd->args->dynamic_str.bytes, R_OK | X_OK) != 0)
-			return (126);
-		cmd->path = ft_strdup(cmd->args->dynamic_str.bytes);
-		return (0);
-	}
-	paths = ft_split(get_env_var(env, "PATH"), ':');
+	env_path = get_env_var(env, "PATH");
+	if (env_path == NULL)
+		return (127);
+	paths = ft_split(env_path, ':');
 	i = 0;
 	while (paths[i] != NULL)
 	{
@@ -91,6 +88,7 @@ int	get_path(t_cmd *cmd, t_env *env)
 		i++;
 	}
 	free_array(paths);
+	cmd->path = NULL;
 	return (127);
 }
 
@@ -103,11 +101,17 @@ int	which_commands(t_cmd *cmds, t_env *env)
 		cmds->builtin = get_builtin(cmds->args->dynamic_str.bytes);
 		if (cmds->builtin == NULL)
 		{
-			exit_status = get_path(cmds, env);
-			if (exit_status != 0)
+			if (ft_strchr(cmds->args->dynamic_str.bytes, '/') != NULL)
 			{
-				cmds->path = NULL;
-				return (perror_return("command not found", exit_status));
+				if (access(cmds->args->dynamic_str.bytes, R_OK | X_OK) != 0)
+					return (perror_return("command not found", 126));
+				cmds->path = ft_strdup(cmds->args->dynamic_str.bytes);
+			}
+			else
+			{
+				exit_status = get_path(cmds, env);
+				if (exit_status != 0)
+					return (perror_return("command not found", exit_status));
 			}
 		}
 		cmds = cmds->next;
