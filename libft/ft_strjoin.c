@@ -38,10 +38,10 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	dest = malloc(sizeof(char) * size);
 	if (!dest)
 		return (NULL);
-	while (s1[i])
+	while (s1 && s1[i])
 		dest[c++] = s1[i++];
 	i = 0;
-	while (s2[i])
+	while (s2 && s2[i])
 		dest[c++] = s2[i++];
 	dest[c] = '\0';
 	return (dest);
