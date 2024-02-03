@@ -15,9 +15,6 @@
 
 # include "minishell.h"
 
-# define VARNAME_CHARSET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
-0123456789_"
-
 t_arg	*allocate_arg(t_arg *prev_arg);
 t_cmd	*allocate_cmd(t_cmd *prev_cmd);
 char	*skip_whitespace(char *input);

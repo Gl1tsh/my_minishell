@@ -20,6 +20,8 @@
 # include "dstr.h"
 
 # define WHITESPACE_CHARSET " \t\n\v\f\r"
+# define VARNAME_CHARSET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
+0123456789_"
 
 typedef char **t_env;
 
@@ -68,6 +70,7 @@ int			perror_return(char *message, int exit_status);
 int			redirect(int oldfd, int newfd);
 int			set_exit_status(int exit_status, t_env *env);
 char		**dup_env(char **env);
+int			is_valid_var_name(char *var);
 
 // builtin
 int			builtin_echo(char **args, t_env *env);

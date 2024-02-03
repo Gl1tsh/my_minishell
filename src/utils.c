@@ -61,3 +61,20 @@ char	**dup_env(char **env)
 	new_env[size] = ft_strdup("?=0");
 	return (new_env);
 }
+
+// Returns true if the content of var before '=' or EOS is a valid variable name
+int	is_valid_var_name(char *var)
+{
+	char	*eos;
+
+	eos = ft_strchr(var, '=');
+	if (eos == NULL)
+		eos = var + ft_strlen(var);
+	while (var < eos)
+	{
+		if (ft_strchr(VARNAME_CHARSET, *var) == NULL)
+			return (0);
+		var++;
+	}
+	return (1);
+}
