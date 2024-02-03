@@ -31,6 +31,11 @@ char	*parse_dollar(t_arg *arg, char *input, t_env *env)
 	var_name_start = input;
 	while (*input && ft_strchr(VARNAME_CHARSET, *input))
 		input++;
+	if (input - var_name_start == 0)
+	{
+		dstr_append(&arg->dynamic_str, "$", 1);
+		return (input);
+	}
 	var_name = ft_strndup(var_name_start, input - var_name_start);
 	var_value = get_env_var(env, var_name);
 	if (var_value != NULL)
@@ -133,7 +138,7 @@ int	parse_commands(t_cmd **head, char *input, t_env *env)
 	{
 		*head = NULL;
 		errno = EINVAL;
-		return (perror_return("parsing pipe", 1));
+		return (perror_return("parsing pipe", 2));
 	}
 	*head = allocate_cmd(NULL);
 	return (internal_parse_commands(*head, input, env));
