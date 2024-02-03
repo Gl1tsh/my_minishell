@@ -65,7 +65,8 @@ void	safe_close(int fd)
 
 void	cmd_signal_handler(int sig_num)
 {
-	(void)sig_num;
+	if (sig_num == SIGQUIT)
+		printf("Quit: %d\n", sig_num);
 }
 
 int	redirect(int oldfd, int newfd)
