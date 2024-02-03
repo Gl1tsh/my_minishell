@@ -72,13 +72,12 @@ char	*parse_argument(t_arg *arg, char *input, t_env *env)
 	}
 }
 
-char	*parse_redir(t_cmd *cmd, char *input, t_env *env)
+char	*parse_redir(t_cmd *cmd, char *input, char redir_char, t_env *env)
 {
 	t_arg	fake_arg;
-	char	redir_char;
 
 	cmd->dirout_mode = O_CREAT | O_TRUNC | O_WRONLY;
-	redir_char = *input++;
+	input++;
 	if (*input == redir_char)
 	{
 		input++;
@@ -92,7 +91,9 @@ char	*parse_redir(t_cmd *cmd, char *input, t_env *env)
 	while (*input && !ft_strchr(WHITESPACE_CHARSET "|<>", *input))
 		input = parse_argument(&fake_arg, input, env);
 	input = skip_whitespace(input);
-	if (redir_char == '>')
+	if (fake_arg.dynamic_str.used_size == 0)
+		input = NULL;
+	else if (redir_char == '>')
 		cmd->dirout = ft_strdup(fake_arg.dynamic_str.bytes);
 	else if (redir_char == '<')
 		cmd->dirin = ft_strdup(fake_arg.dynamic_str.bytes);
@@ -100,23 +101,22 @@ char	*parse_redir(t_cmd *cmd, char *input, t_env *env)
 	return (input);
 }
 
-int	internal_parse_commands(t_cmd *cmd, char *input, t_env *env)
+char	*do_parse_commands(t_cmd *cmd, t_arg *arg, char *input, t_env *env)
 {
-	t_arg	*arg;
-
-	arg = cmd->args;
-	while (*input)
+	while (input && *input)
 	{
 		if (*input == '|')
 		{
+			input = skip_whitespace(input + 1);
+			if (*input == '|')
+				return (NULL);
 			cmd = allocate_cmd(cmd);
 			arg = cmd->args;
-			input = skip_whitespace(input + 1);
 		}
 		else if (*input == '$')
 			input = parse_dollar(arg, input + 1, env);
 		else if (*input == '<' || *input == '>')
-			input = parse_redir(cmd, input, env);
+			input = parse_redir(cmd, input, *input, env);
 		else if (ft_strchr(WHITESPACE_CHARSET, *input))
 		{
 			input = skip_whitespace(input);
@@ -126,7 +126,7 @@ int	internal_parse_commands(t_cmd *cmd, char *input, t_env *env)
 		else
 			input = parse_argument(arg, input, env);
 	}
-	return (0);
+	return (input);
 }
 
 int	parse_commands(t_cmd **head, char *input, t_env *env)
@@ -138,8 +138,13 @@ int	parse_commands(t_cmd **head, char *input, t_env *env)
 	{
 		*head = NULL;
 		errno = EINVAL;
-		return (perror_return("parsing pipe", 2));
+		return (perror_return("parsing", 2));
 	}
 	*head = allocate_cmd(NULL);
-	return (internal_parse_commands(*head, input, env));
+	if (do_parse_commands(*head, (*head)->args, input, env) == NULL)
+	{
+		errno = EINVAL;
+		return (perror_return("parsing", 2));
+	}
+	return (0);
 }
