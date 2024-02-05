@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 11:57:44 by tomuller          #+#    #+#             */
-/*   Updated: 2024/01/29 18:02:42 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/05 13:55:21 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include "dstr.h"
 
 # define WHITESPACE_CHARSET " \t\n\v\f\r"
+# define DIRIN_MODE_HEREDOC 1
 
 // pointed fonction for builtin
 typedef int	(*t_builtin)(char **, char **);

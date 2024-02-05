@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:10:53 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/29 17:58:09 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/05 15:11:11 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,34 +160,19 @@ int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, char **env)
 
 int	setup_redirections(t_cmd *cmds, int *fd)
 {
-	char	*out_filename;
-	int		oflag;
-
 	if (cmds->dirin != NULL)
 	{
 		fd[0] = open(cmds->dirin, O_RDONLY);
-		//if (cmds->dirin_mode == DIRIN_MODE_HEREDOC)
-		//	unlink(cmds->dirin);
+		if (cmds->dirin_mode == DIRIN_MODE_HEREDOC)
+			unlink(cmds->dirin);
 		fd[2] = dup(STDIN_FILENO);
 	}
 	while (cmds->next != NULL)
 		cmds = cmds->next;
 	if (cmds->dirout != NULL)
 	{
-		out_filename = cmds->dirout;
-		if (*out_filename == '>')
-		{
-			out_filename++;
-			if (*out_filename == '>')
-			{
-				oflag = O_CREAT | O_APPEND | O_WRONLY;
-				out_filename++;
-			}
-			else
-				oflag = O_CREAT | O_TRUNC | O_WRONLY;
-			fd[1] = open(out_filename, oflag, 0777);
-			fd[3] = dup(STDOUT_FILENO);
-		}
+		fd[1] = open(cmds->dirout, cmds->dirout_mode, 0777);
+		fd[3] = dup(STDOUT_FILENO);
 	}
 	return (0);
 }

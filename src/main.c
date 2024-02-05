@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:41 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/29 18:10:24 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/05 15:11:05 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,19 @@ void print_commands(t_cmd *cmds)
 
 	while (cmds != NULL)
 	{
-		fprintf(stderr, "cmd : args %p \n", cmds->args);
+		fprintf(stderr, "\ncmd : args %p \n", cmds->args);
 		arg = cmds->args;
 		while (arg != NULL)
 		{
-			fprintf(stderr, "arg : %p \n", arg);
-			fprintf(stderr, "arg : [%s]\n", arg->dynamic_str.bytes);
+			fprintf(stderr, "  arg : %p \n", arg);
+			fprintf(stderr, "  arg : [%s]\n", arg->dynamic_str.bytes);
 			arg = arg->next;
 		}
+		fprintf(stderr, "dirin : [%s]\n", cmds->dirin);
+		fprintf(stderr, "dirout : [%s]\n", cmds->dirout);
+		fprintf(stderr, "dirin_mode : [%d]\n", cmds->dirin_mode);
+		fprintf(stderr, "dirout_mode : [%d]\n", cmds->dirout_mode);
+		fprintf(stderr, "path : [%s]\n", cmds->path);
 		cmds = cmds->next;
 	}
 }
@@ -79,18 +84,11 @@ int	launch_commands(char *input, char **env)
 	exit_status = parse_commands(&cmds, input, env);
 	if (exit_status != 0)
 		return (free_commands(cmds, exit_status));
+	print_commands(cmds);
 	exit_status = which_commands(cmds);
 	if (exit_status != 0)
 		return (free_commands(cmds, exit_status));
-	// {
-	// 	t_cmd *cmd = cmds;
-	// 	//cmds->dirin = "infile";
-	// 	while (cmd->next != NULL)
-	// 		cmd = cmd->next;
-	// 	cmd->dirout = ">>outfile";
-	// }
 	exit_status = run_commands(cmds, env);
-	//print_commands(cmds);
 	return (free_commands(cmds, exit_status));
 }
 

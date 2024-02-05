@@ -6,11 +6,12 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 15:47:19 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/26 14:26:05 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/05 15:34:08 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <fcntl.h>
 
 #define VARNAME_CHARSET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
 0123456789_"
@@ -61,10 +62,10 @@ char	*parse_dollar(t_arg *arg, char *input)
 
 char *parse_argument(t_arg *arg, char *input)
 {
-	if (*input == '"')
+	if (*input && *input == '"')
 	{
 		input++;
-		while (*input != '"')
+		while (*input && *input != '"')
 		{
 			if (*input == '$')
 				input = parse_dollar(arg, input + 1);
@@ -73,10 +74,10 @@ char *parse_argument(t_arg *arg, char *input)
 		}
 		return (input + 1);
 	}
-	else if (*input == '\'')
+	else if (*input && *input == '\'')
 	{
 		input++;
-		while (*input != '\'')
+		while (*input && *input != '\'')
 			dstr_append(&arg->dynamic_str, input++, 1);
 		return (input + 1);
 	}
@@ -85,6 +86,37 @@ char *parse_argument(t_arg *arg, char *input)
 		dstr_append(&arg->dynamic_str, input, 1);
 		return (input + 1);
 	}
+}
+
+char	*parse_redir(t_cmd *cmd, char *input)
+{
+	t_arg	fake_arg;
+	char	which_sign;
+
+	which_sign = *input;
+	cmd->dirout_mode = O_CREAT | O_TRUNC | O_WRONLY;
+	if (*input && *input == '<' && *(input + 1) == '<')
+	{
+		cmd->dirin_mode = DIRIN_MODE_HEREDOC;
+		input++;
+	}
+	else if (*input && *input == '>' && *(input + 1) == '>')
+	{
+		cmd->dirout_mode = O_CREAT | O_APPEND | O_WRONLY;
+		input++;
+	}
+	input++;
+	while (*input && ft_strchr(WHITESPACE_CHARSET, *input))
+		input++;
+	dstr_allocate(&fake_arg.dynamic_str, 16);
+	while (*input && ft_strchr(WHITESPACE_CHARSET "|<>", *input) == NULL)
+		input = parse_argument(&fake_arg, input);
+	if (which_sign == '<')
+		cmd->dirin = ft_strdup(fake_arg.dynamic_str.bytes);
+	else if (which_sign == '>')
+		cmd->dirout = ft_strdup(fake_arg.dynamic_str.bytes);
+	dstr_free(&fake_arg.dynamic_str);
+	return (input);
 }
 
 //t_arg	*link_and_prepare_arg(t_arg *arg,)
@@ -117,6 +149,8 @@ int	parse_commands(t_cmd **head, char *input, char **env)
 			if (*input != '|')
 				arg = allocate_arg(arg);
 		}
+		else if (*input == '<' || *input == '>')
+			input = parse_redir(cmd, input);
 		else
 			input = parse_argument(arg, input);
 	}
