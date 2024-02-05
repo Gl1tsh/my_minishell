@@ -6,12 +6,13 @@
 #    By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/03 19:39:17 by nagiorgi          #+#    #+#              #
-#    Updated: 2024/01/24 17:58:34 by nagiorgi         ###   ########.fr        #
+#    Updated: 2024/02/05 16:22:17 by nagiorgi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # Liste des fichiers source
-SRCS = 	ft_atoi.c \
+SRCS = 	ft_strcmp.c \
+		ft_atoi.c \
 		ft_bzero.c \
 		ft_calloc.c \
 		ft_isalnum.c \
@@ -78,13 +79,28 @@ CLEAN = rm -f
 
 ARC = ar rcs
 
-# Règle de compilation des fichiers source en fichiers objets
+# Couleurs
+GREEN=\033[0;32m
+RED=\033[0;31m
+PURPLE=\033[0;35m
+NC=\033[0m # No Color
+
 .c.o:
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@printf "\r\033[K│ Compiling $<... "
+	@$(CC) $(CFLAGS) -c $< -o $@ > temp.log 2>&1 || touch temp.err
+	@if test -e temp.err; then \
+		printf "${RED}Error${NC}     "; \
+		rm temp.err; \
+	elif grep -q "warning" temp.log; then \
+		printf "${PURPLE}Warnings${NC}     "; \
+	fi
+	@rm -f temp.log
 
 # Règle par défaut pour construire la bibliothèque
 $(NAME): $(OBJS)
 	@${ARC} $(NAME) $^
+	@printf "\n"
+	@printf "│${GREEN}\033[1m Success: Libft files compiled successfully.${NC}\033[0m\n"
 
 all:	$(NAME)
 
