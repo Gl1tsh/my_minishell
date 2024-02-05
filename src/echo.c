@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:21 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/29 15:56:46 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/05 15:42:17 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ int	builtin_echo(char **args, char **env)
 	int	i;
 	int	option_n;
 
+	(void)env;
 	option_n = ft_strncmp(args[1], "-n", 2) == 0;
 	if (option_n)
 		i = 2;

@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 15:11:31 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/29 14:48:49 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/05 15:41:46 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void	free_array(char **array)
 
 t_builtin	get_builtin(char *name)
 {
+	(void)name;
 	return NULL;
 }
 

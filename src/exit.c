@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:34 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/29 15:57:02 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/05 15:39:10 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,5 +14,7 @@
 
 int	builtin_exit(char **args, char **env)
 {
+	(void)args;
+	(void)env;
 	exit(0);
 }
