@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 15:47:19 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/02/05 15:41:25 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/05 15:49:30 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ int	parse_commands(t_cmd **head, char *input, char **env)
 			fprintf(stderr, "parse_commands: found space: arg: %s\n", arg->dynamic_str.bytes);
 			while (ft_strchr(WHITESPACE_CHARSET, *input))
 				input++;
-			if (*input != '|')
+			if (*input != '|' && (*input != '<' && *input != '>'))
 				arg = allocate_arg(arg);
 		}
 		else if (*input == '<' || *input == '>')
