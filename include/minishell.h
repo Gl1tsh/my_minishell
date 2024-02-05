@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 11:57:44 by tomuller          #+#    #+#             */
-/*   Updated: 2024/02/05 13:55:21 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/05 16:26:38 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ int			parse_commands(t_cmd **head, char *input, char **env);
 int			run_commands(t_cmd *commands, char **env);
 
 int			path_or_builtin(t_cmd *cmd);
+int			process_heredoc(t_cmd *cmds);
 
 // builtin
 int			builtin_echo(char **args, char **env);

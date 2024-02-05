@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:41 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/02/05 15:11:05 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/05 16:33:51 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,10 @@ int	launch_commands(char *input, char **env)
 	t_cmd	*cmds;
 
 	exit_status = parse_commands(&cmds, input, env);
+	if (exit_status != 0)
+		return (free_commands(cmds, exit_status));
+	print_commands(cmds);
+	exit_status = process_heredoc(cmds);
 	if (exit_status != 0)
 		return (free_commands(cmds, exit_status));
 	print_commands(cmds);
