@@ -6,14 +6,29 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:41 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/02/05 16:33:51 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/07 15:09:07 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+/* 
+ * Index:
+ * 1. print_commands: Affiche les commandes stockées dans une structure t_cmd.
+ * 2. free_commands: Libère la mémoire allouée pour une liste de commandes.
+ * 3. which_commands: Détermine si chaque commande est une commande intégrée ou un chemin d'accès.
+ * 4. launch_commands: Traite une chaîne d'entrée et exécute les commandes correspondantes.
+ * 5. main: Point d'entrée du programme.
+ */
 
 #include "minishell.h"
 
 #include <readline/readline.h>
 #include <readline/history.h>
+
+/* 
+ * print_commands: Affiche les commandes stockées dans une structure t_cmd.
+ * - Parcourt la liste de commandes.
+ * - Pour chaque commande, affiche les arguments et les redirections.
+ */
 
 void print_commands(t_cmd *cmds)
 {
@@ -37,6 +52,14 @@ void print_commands(t_cmd *cmds)
 		cmds = cmds->next;
 	}
 }
+
+/* 
+ * free_commands: Libère la mémoire allouée pour une liste de commandes.
+ * - Parcourt la liste de commandes.
+ * - Pour chaque commande, libère la mémoire allouée pour
+ * 		les arguments et le chemin.
+ * - Renvoie le statut de sortie donné.
+ */
 
 int	free_commands(t_cmd *cmds, int exit_status)
 {
@@ -62,6 +85,15 @@ int	free_commands(t_cmd *cmds, int exit_status)
 	return (exit_status);
 }
 
+/* 
+ * which_commands: Détermine si chaque commande est une commande intégrée
+ 		ou un chemin d'accès.
+ * - Parcourt la liste de commandes.
+ * - Pour chaque commande, appelle path_or_builtin.
+ * - Si path_or_builtin renvoie une erreur, renvoie le statut de sortie.
+ * - Sinon, renvoie 0.
+ */
+
 int	which_commands(t_cmd *cmds)
 {
 	int	exit_status;
@@ -75,6 +107,23 @@ int	which_commands(t_cmd *cmds)
 	}
 	return (0);
 }
+
+/* 
+ * launch_commands: Traite une chaîne d'entrée et exécute
+ 		les commandes correspondantes.
+ * - Appelle parse_commands pour traiter la chaîne d'entrée.
+ * - Si parse_commands renvoie une erreur, libère les commandes et
+ * 		renvoie le statut de sortie.
+ * - Appelle process_heredoc pour traiter les redirections de type heredoc.
+ * - Si process_heredoc renvoie une erreur, libère les commandes et
+ * 		renvoie le statut de sortie.
+ * - Appelle which_commands pour déterminer si chaque commande est
+ * 		une commande intégrée ou un chemin d'accès.
+ * - Si which_commands renvoie une erreur, libère les commandes et
+ * 		renvoie le statut de sortie.
+ * - Appelle run_commands pour exécuter les commandes.
+ * - Libère les commandes et renvoie le statut de sortie.
+ */
 
 int	launch_commands(char *input, char **env)
 {
@@ -95,6 +144,15 @@ int	launch_commands(char *input, char **env)
 	exit_status = run_commands(cmds, env);
 	return (free_commands(cmds, exit_status));
 }
+
+/* 
+ * main: Point d'entrée du programme.
+ * - Lit une ligne de l'entrée standard.
+ * - Si la ligne est vide, libère la mémoire allouée et continue la boucle.
+ * - Sinon, ajoute la ligne à l'historique et appelle launch_commands.
+ * - Libère la mémoire allouée pour la ligne et continue la boucle.
+ * - Renvoie 0 à la fin.
+ */
 
 int	main(int argc, char **argv, char **env)
 {

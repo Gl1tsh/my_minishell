@@ -6,15 +6,33 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 15:47:19 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/02/05 15:49:30 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/07 15:05:13 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+/* 
+ * Index:
+ * 1. allocate_arg: Alloue de la mémoire pour un nouvel argument.
+ * 2. allocate_cmd: Alloue de la mémoire pour une nouvelle commande.
+ * 3. parse_dollar: Traite une variable d'environnement dans un argument.
+ * 4. parse_argument: Traite un argument.
+ * 5. parse_redir: Traite une redirection.
+ * 6. parse_commands: Traite une chaîne de commandes.
+ */
 
 #include "minishell.h"
 #include <fcntl.h>
 
 #define VARNAME_CHARSET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
 0123456789_"
+
+/* 
+ * allocate_arg: Alloue de la mémoire pour un nouvel argument.
+ * - Alloue de la mémoire pour la structure t_arg.
+ * - Lie le nouvel argument au précédent.
+ * - Alloue de la mémoire pour la chaîne dynamique de l'argument.
+ * - Renvoie le nouvel argument.
+ */
 
 t_arg	*allocate_arg(t_arg *prev_arg)
 {
@@ -27,6 +45,14 @@ t_arg	*allocate_arg(t_arg *prev_arg)
 	return (arg);
 }
 
+/* 
+ * allocate_cmd: Alloue de la mémoire pour une nouvelle commande.
+ * - Alloue de la mémoire pour la structure t_cmd.
+ * - Lie la nouvelle commande à la précédente.
+ * - Alloue de la mémoire pour le premier argument de la commande.
+ * - Renvoie la nouvelle commande.
+ */
+
 t_cmd	*allocate_cmd(t_cmd *prev_cmd)
 {
 	t_cmd *cmd;
@@ -37,6 +63,15 @@ t_cmd	*allocate_cmd(t_cmd *prev_cmd)
 	cmd->args = allocate_arg(NULL);
 	return (cmd);
 }
+
+/* 
+ * parse_dollar: Traite une variable d'environnement dans un argument.
+ * - Trouve le nom de la variable après le '$'.
+ * - Récupère la valeur de la variable d'environnement.
+ * - Ajoute la valeur à la chaîne dynamique de l'argument.
+ * - Renvoie le pointeur vers la fin du nom de la variable dans
+ * 		la chaîne d'entrée.
+ */
 
 char	*parse_dollar(t_arg *arg, char *input)
 {
@@ -59,6 +94,13 @@ char	*parse_dollar(t_arg *arg, char *input)
 	fprintf(stderr, "parse_dollar: leaving\n");
 	return (input);
 }
+
+/* 
+ * parse_argument: Traite un argument.
+ * - Si l'argument est entre guillemets, traite les variables d'environnement.
+ * - Sinon, ajoute simplement le caractère à la chaîne dynamique de l'argument.
+ * - Renvoie le pointeur vers la fin de l'argument dans la chaîne d'entrée.
+ */
 
 char *parse_argument(t_arg *arg, char *input)
 {
@@ -87,6 +129,15 @@ char *parse_argument(t_arg *arg, char *input)
 		return (input + 1);
 	}
 }
+
+/* 
+ * parse_redir: Traite une redirection.
+ * - Détermine le type de redirection.
+ * - Saute les espaces blancs.
+ * - Traite l'argument de la redirection.
+ * - Stocke le chemin de la redirection dans la commande.
+ * - Renvoie le pointeur vers la fin de la redirection dans la chaîne d'entrée.
+ */
 
 char	*parse_redir(t_cmd *cmd, char *input)
 {
@@ -120,6 +171,19 @@ char	*parse_redir(t_cmd *cmd, char *input)
 }
 
 //t_arg	*link_and_prepare_arg(t_arg *arg,)
+
+/* 
+ * parse_commands: Traite une chaîne de commandes.
+ * - Alloue de la mémoire pour la première commande.
+ * - Traite chaque caractère de la chaîne d'entrée.
+ * - Si le caractère est un '|', alloue de la mémoire pour
+ * 		 une nouvelle commande.
+ * - Si le caractère est un espace, alloue de la mémoire pour
+ * 		 un nouvel argument.
+ * - Si le caractère est une redirection, appelle parse_redir.
+ * - Sinon, appelle parse_argument.
+ * - Renvoie 0 à la fin.
+ */
 
 int	parse_commands(t_cmd **head, char *input, char **env)
 {

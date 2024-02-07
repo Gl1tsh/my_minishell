@@ -6,25 +6,36 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:10:53 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/02/05 15:11:11 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/07 15:00:16 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+/*
+ * Fonctions dans run_command.c :
+ * - convert_args         : Convertit args en tableau.
+ * - perror_return        : Affiche erreur.
+ * - safe_close           : Ferme descripteur > 2.
+ * - cmd_signal_handler   : Gère signaux.
+ * - redirect             : Redirige descripteur.
+ * - exec_builtin         : Exécute commande intégrée.
+ * - exec_cmd             : Exécute commande non intégrée.
+ * - setup_pipe           : Configure pipe.
+ * - exec_pipeline        : Exécute commandes avec pipes.
+ * - setup_redirections   : Configure redirections.
+ * - run_commands         : Exécute commandes avec redirections et pipes.
+ */
 
 #include "minishell.h"
 #include <fcntl.h>
 
-/******************************************************************************
-*                                                                             *
-*   File: run_command.c                                                       *
-*                                                                             *
-*   Index:                                                                    *
-*   1. exec - Executes a command with the provided environment                *
-*   2. safe_close - Safely closes a file descriptor                           *
-*   3. redirect - Redirects one file descriptor to another                    *
-*   4. exec_pipeline - Executes a pipeline of commands                        *
-*   5. run_commands - Runs a list of commands                                 *
-*                                                                             *
-******************************************************************************/
+/* 
+ * convert_args: Transforme une liste chaînée d'arguments en tableau.
+ * - Parcourt la liste pour compter le nombre d'éléments.
+ * - Alloue de la mémoire pour le tableau avec malloc.
+ * - Remplit le tableau avec les arguments de la liste.
+ * - Ajoute un NULL à la fin pour indiquer la fin.
+ * - Renvoie le tableau d'arguments.
+ */
 
 char	**convert_args(t_arg *args)
 {
@@ -51,11 +62,29 @@ char	**convert_args(t_arg *args)
 	return (args_array);
 }
 
+/* 
+ * convert_args: Transforme une liste chaînée d'arguments en tableau.
+ * - Parcourt la liste pour compter le nombre d'éléments.
+ * - Alloue de la mémoire pour le tableau avec malloc.
+ * - Remplit le tableau avec les arguments de la liste.
+ * - Ajoute un NULL à la fin pour indiquer la fin.
+ * - Renvoie le tableau d'arguments.
+ */
+
 int	perror_return(char *message, int exit_status)
 {
 	perror(message);
 	return (exit_status);
 }
+
+/* 
+ * convert_args: Transforme une liste chaînée d'arguments en tableau.
+ * - Parcourt la liste pour compter le nombre d'éléments.
+ * - Alloue de la mémoire pour le tableau avec malloc.
+ * - Remplit le tableau avec les arguments de la liste.
+ * - Ajoute un NULL à la fin pour indiquer la fin.
+ * - Renvoie le tableau d'arguments.
+ */
 
 void	safe_close(int fd)
 {
@@ -63,11 +92,24 @@ void	safe_close(int fd)
 		close(fd);
 }
 
+/* 
+ * cmd_signal_handler: Gère les signaux pendant l'exécution d'une commande.
+ * - Ne fait rien pour le moment.
+ */
+
 void	cmd_signal_handler(int sig_num)
 {
 	(void)sig_num;
 	//rien mettre
 }
+
+/* 
+ * redirect: Redirige un descripteur de fichier vers un autre.
+ * - Utilise dup2 pour rediriger oldfd vers newfd.
+ * - Ferme oldfd si la redirection a réussi.
+ * - Renvoie 0 si la redirection a réussi, sinon renvoie
+ * 		le résultat de perror_return.
+ */
 
 int redirect(int oldfd, int newfd)
 {
@@ -80,6 +122,15 @@ int redirect(int oldfd, int newfd)
 	}
 	return (0);
 }
+
+/* 
+ * exec_builtin: Exécute une commande intégrée.
+ * - Duplique les descripteurs standard d'entrée et de sortie.
+ * - Redirige in_fd vers l'entrée standard et fd[1] vers la sortie standard.
+ * - Exécute la commande intégrée.
+ * - Restaure les descripteurs standard d'entrée et de sortie.
+ * - Renvoie le statut de sortie de la commande intégrée.
+ */
 
 int	exec_builtin(t_cmd *cmds, int in_fd, int *fd, char **env)
 {
@@ -99,6 +150,15 @@ int	exec_builtin(t_cmd *cmds, int in_fd, int *fd, char **env)
 		return (1);
 	return (exit_status);
 }
+
+/* 
+ * exec_cmd: Exécute une commande non intégrée.
+ * - Crée un nouveau processus avec fork.
+ * - Redirige in_fd vers l'entrée standard et fd[1] vers la sortie standard
+ * 		dans le processus fils.
+ * - Exécute la commande non intégrée dans le processus fils.
+ * - Renvoie l'ID du processus fils dans le processus parent.
+ */
 
 int	exec_cmd(t_cmd *cmds, int in_fd, int *fd, char **env)
 {
@@ -123,6 +183,14 @@ int	exec_cmd(t_cmd *cmds, int in_fd, int *fd, char **env)
 	return (pid);
 }
 
+/* 
+ * setup_pipe: Configure un pipe entre deux commandes.
+ * - Si cmds->next est NULL, configure fd[1] pour écrire dans out_fd.
+ * - Sinon, crée un nouveau pipe avec la fonction pipe.
+ * - Renvoie 0 si la configuration a réussi, sinon renvoie
+ * 		le résultat de perror_return.
+ */
+
 int	setup_pipe(t_cmd *cmds, int out_fd, int *fd)
 {
 	if (cmds->next == NULL)
@@ -135,6 +203,16 @@ int	setup_pipe(t_cmd *cmds, int out_fd, int *fd)
 		return (perror_return("setup_pipe", 1));
 	return (0);
 }
+
+/* 
+ * exec_pipeline: Exécute une série de commandes connectées par des pipes.
+ * - Configure un pipe avec setup_pipe.
+ * - Exécute la commande courante avec exec_builtin ou exec_cmd.
+ * - Si cmds->next n'est pas NULL, exécute récursivement le 
+ * 		reste de la pipeline.
+ * - Attend que le processus fils se termine avec waitpid.
+ * - Renvoie 0.
+ */
 
 int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, char **env)
 {
@@ -158,6 +236,15 @@ int	exec_pipeline(t_cmd *cmds, int in_fd, int out_fd, char **env)
 	return 0;
 }
 
+/* 
+ * setup_redirections: Configure les redirections pour les commandes.
+ * - Si cmds->dirin n'est pas NULL, ouvre le fichier pour la lecture et 
+ * 		duplique l'entrée standard.
+ * - Si cmds->dirout n'est pas NULL, ouvre le fichier pour l'écriture et 
+ * 		duplique la sortie standard.
+ * - Renvoie 0.
+ */
+
 int	setup_redirections(t_cmd *cmds, int *fd)
 {
 	if (cmds->dirin != NULL)
@@ -176,6 +263,16 @@ int	setup_redirections(t_cmd *cmds, int *fd)
 	}
 	return (0);
 }
+
+/* 
+ * run_commands: Exécute une série de commandes avec gestion 
+ 		des redirections et des pipes.
+ * - Configure les redirections avec setup_redirections.
+ * - Installe un gestionnaire de signaux avec signal.
+ * - Exécute la pipeline de commandes avec exec_pipeline.
+ * - Restaure les descripteurs standard d'entrée et de sortie si nécessaire.
+ * - Renvoie le statut de sortie de exec_pipeline.
+ */
 
 int	run_commands(t_cmd *commands, char **env)
 {

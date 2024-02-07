@@ -6,11 +6,28 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 15:11:31 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/02/05 15:41:46 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/07 15:02:03 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+/* 
+ * Index:
+ * 1. join_path: Concatène deux chaînes avec un '/' entre elles.
+ * 2. free_array: Libère un tableau de chaînes.
+ * 3. get_builtin: Renvoie une fonction intégrée correspondant au nom donné.
+ * 4. path_or_builtin: Détermine si une commande est une commande intégrée ou un chemin d'accès.
+ */
+
 #include "minishell.h"
+
+/* 
+ * run_commands: Exécute une série de commandes avec gestion des redirections et des pipes.
+ * - Configure les redirections avec setup_redirections.
+ * - Installe un gestionnaire de signaux avec signal.
+ * - Exécute la pipeline de commandes avec exec_pipeline.
+ * - Restaure les descripteurs standard d'entrée et de sortie si nécessaire.
+ * - Renvoie le statut de sortie de exec_pipeline.
+ */
 
 char	*join_path(char const *s1, char const *s2)
 {
@@ -35,6 +52,12 @@ char	*join_path(char const *s1, char const *s2)
 	return (dest);
 }
 
+/* 
+ * free_array: Libère un tableau de chaînes.
+ * - Parcourt le tableau et libère chaque chaîne.
+ * - Libère le tableau lui-même.
+ */
+
 void	free_array(char **array)
 {
 	int	i;
@@ -45,11 +68,29 @@ void	free_array(char **array)
 	free(array);
 }
 
+/* 
+ * get_builtin: Renvoie une fonction intégrée correspondant au nom donné.
+ * - Pour l'instant, ne fait rien et renvoie NULL.
+ */
+
 t_builtin	get_builtin(char *name)
 {
 	(void)name;
 	return NULL;
 }
+
+/* 
+ * path_or_builtin: Détermine si une commande est une commande intégrée ou un chemin d'accès.
+ * - Vérifie si la commande est une commande intégrée avec get_builtin.
+ * - Si c'est le cas, stocke la fonction dans cmd->builtin et renvoie 0.
+ * - Si la commande contient un '/', vérifie si c'est un chemin d'accès valide.
+ * - Si c'est le cas, stocke le chemin dans cmd->path et renvoie 0.
+ * - Sinon, parcourt les chemins dans la variable d'environnement PATH.
+ * - Pour chaque chemin, concatène le chemin et la commande avec join_path.
+ * - Vérifie si le chemin complet est un chemin d'accès valide.
+ * - Si c'est le cas, stocke le chemin dans cmd->path, libère les chemins et renvoie 0.
+ * - Si aucun chemin n'est valide, libère les chemins et renvoie 1.
+ */
 
 int	path_or_builtin(t_cmd *cmd)
 {
