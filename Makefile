@@ -56,7 +56,7 @@ ${NAME}:
 	fi
 	@printf "└──────────\n"
 	@rm -f has_warnings
-
+	@${CC} -o ${NAME} ${OBJS1} ${OBJS2} ${LIBFT} ${LDFLAGS}
 
 ${LIBFT}:
 	@printf "│ Compiling ${CGRN}libft${RSET}...\n"
