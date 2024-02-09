@@ -1,4 +1,3 @@
-
 NAME = minishell
 CC = gcc
 CFLAGS = -Wall -Wextra -g -I/usr/local/opt/readline/include
@@ -17,8 +16,10 @@ SRCS2 = src/main.c src/run_command.c src/parsing.c src/path.c src/dstr.c src/her
 OBJS1 = $(patsubst src/%.c,$(BUILDDIR)%.o,$(SRCS1))
 OBJS2 = $(patsubst src/%.c,$(BUILDDIR)%.o,$(SRCS2))
 
+# Variable pour stocker si des avertissements ont été générés lors de la compilation
 HAS_WARNINGS :=
 
+# Règle pour compiler un fichier .c en fichier .o
 .c.o:
 	@printf "\r\033[K│ Compiling $<... "
 	@$(CC) $(CFLAGS) -c $< -o $@ 2> temp_warnings || (cat temp_warnings && printf "${CRED}minishell compiling failed${RSET}     " && exit 1)
@@ -26,6 +27,7 @@ HAS_WARNINGS :=
 		echo 1 > has_warnings; \
 	fi
 
+# Règle pour compiler un fichier .c en fichier .o dans le répertoire BUILDDIR
 ${BUILDDIR}%.o: src/%.c
 	@mkdir -p $(dir $@)
 	@${CC} ${CFLAGS} ${INCLUDES} -c $< -o $@ 2> temp_warnings || (printf "│ Compiling ${CRED}$< = failed${RSET}\n" && cat temp_warnings && printf "├──────────\n├─>>> ${CRED}minishell compiling failed!${RSET}\n└──────────\n" && exit 1)
@@ -38,6 +40,8 @@ ${BUILDDIR}%.o: src/%.c
 	@cat temp_warnings
 	@rm -f temp_warnings
 
+
+# Règle pour créer l'exécutable
 ${NAME}: 
 	@printf "\n"
 	@printf "${CGRN}MINISHELL COMPILING${RSET}\n"
@@ -62,12 +66,14 @@ ${LIBFT}:
 	@printf "│ Compiling ${CGRN}libft${RSET}...\n"
 	@${MAKE} -C libft all
 
+# Règle pour nettoyer les fichiers objets
 clean:
 	@printf "┌──────────\n"
 	@printf "│\tRemoving ${CRED}${BUILDDIR}${RSET} for ${CYEL}${NAME}${RSET}\n"
 	@find ${BUILDDIR} -type f -delete
 	@${MAKE} -C libft clean
 
+# Règle pour nettoyer les fichiers objets et l'exécutable
 fclean: clean
 	@if [ -e "./${NAME}" ]; then \
 		printf "│\tRemoving ${CYEL}${NAME}${RSET}\n└──────────\n"; \
@@ -77,6 +83,7 @@ fclean: clean
 
 all: ${NAME}
 
+# Règle pour recompiler les fichiers objets et l'exécutable
 re:
 	@printf "\n┌──────────\n│ Cleaning and ${CGRN}recompiling${RSET}...\n"
 	@${MAKE} fclean

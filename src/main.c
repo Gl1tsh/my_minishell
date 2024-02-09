@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:41 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/02/07 15:09:07 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/09 10:55:21 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ int	which_commands(t_cmd *cmds)
 
 	while (cmds != NULL)
 	{
-		exit_status = path_or_builtin(cmds);
+		exit_status = get_builtin(cmds);
 		if (exit_status != 0)
 			return (exit_status);
 		cmds = cmds->next;
