@@ -1,6 +1,6 @@
 NAME = minishell
 CC = gcc
-CFLAGS = -Wall -Wextra -g -I/usr/local/opt/readline/include
+CFLAGS = -Wall -Werror -Wextra -g -I/usr/local/opt/readline/include
 LDFLAGS = -L/usr/local/opt/readline/lib -lreadline
 BUILDDIR = build/
 LIBFT = libft/libft.a
@@ -11,8 +11,8 @@ CYEL = \033[1;33m
 RSET = \033[0m
 CVIO = \033[1;35m
 
-SRCS1 = src/cd.c src/echo.c src/env.c src/exit.c src/pwd.c
-SRCS2 = src/main.c src/run_command.c src/parsing.c src/path.c src/dstr.c src/heredoc.c
+SRCS1 = src/builtin/cd.c src/builtin/echo.c src/builtin/env.c src/builtin/exit.c src/builtin/pwd.c src/builtin/unset.c src/builtin/export.c
+SRCS2 = src/run_command.c src/run_command2.c src/parsing.c src/parsing2.c src/path.c src/dstr.c src/heredoc.c src/env.c src/utils.c src/main.c
 OBJS1 = $(patsubst src/%.c,$(BUILDDIR)%.o,$(SRCS1))
 OBJS2 = $(patsubst src/%.c,$(BUILDDIR)%.o,$(SRCS2))
 

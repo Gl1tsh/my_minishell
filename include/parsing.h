@@ -1,21 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pwd.c                                              :+:      :+:    :+:   */
+/*   parsing.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/23 17:22:47 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/02/05 15:42:41 by nagiorgi         ###   ########.fr       */
+/*   Created: 2024/02/10 08:21:43 by nagiorgi          #+#    #+#             */
+/*   Updated: 2024/02/10 08:24:58 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#ifndef PARSING_H
+# define PARSING_H
 
-int	builtin_pwd(char **args, char **env)
-{
-	(void)args;
-	(void)env;
-	printf("%s\n", getenv("PWD"));
-	return (0);
-}
+# include "minishell.h"
+
+t_arg	*allocate_arg(t_arg *prev_arg);
+t_cmd	*allocate_cmd(t_cmd *prev_cmd);
+char	*skip_whitespace(char *input);
+
+#endif

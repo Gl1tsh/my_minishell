@@ -6,17 +6,9 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 15:11:31 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/02/09 10:52:41 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/10 09:06:05 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-/* 
- * Index:
- * 1. join_path: Concatène deux chaînes avec un '/' entre elles.
- * 2. free_array: Libère un tableau de chaînes.
- * 3. get_builtin: Renvoie une fonction intégrée correspondant au nom donné.
- * 4. path_or_builtin: Détermine si une commande est une commande intégrée ou un chemin d'accès.
- */
 
 #include "minishell.h"
 
@@ -43,12 +35,6 @@ char	*join_path(char const *s1, char const *s2)
 	return (dest);
 }
 
-/* 
- * free_array: Libère un tableau de chaînes.
- * - Parcourt le tableau et libère chaque chaîne.
- * - Libère le tableau lui-même.
- */
-
 void	free_array(char **array)
 {
 	int	i;
@@ -59,63 +45,65 @@ void	free_array(char **array)
 	free(array);
 }
 
-t_builtin	get_builtin(char *str)
+t_builtin	get_builtin(char *name)
 {
-	if (ft_strcmp(str, "cd") == 0)
-		return (builtin_cd);
-	else if (ft_strcmp(str, "echo") == 0)
-		return (builtin_echo);
-	else if (ft_strcmp(str, "env") == 0)
-		return (builtin_env);
-	else if (ft_strcmp(str, "exit") == 0)
+	if (ft_strcmp(name, "exit") == 0)
 		return (builtin_exit);
-	else if (ft_strcmp(str, "pwd") == 0)
+	else if (ft_strcmp(name, "echo") == 0)
+		return (builtin_echo);
+	else if (ft_strcmp(name, "pwd") == 0)
 		return (builtin_pwd);
-	// else if (ft_strcmp(str, "unset") == 0)
-	// 	return (builtin_unset);
-	// else if (ft_strcmp(str, "export") == 0)
-	// 	return (builtin_export);
+	else if (ft_strcmp(name, "cd") == 0)
+		return (builtin_cd);
+	else if (ft_strcmp(name, "env") == 0)
+		return (builtin_env);
+	else if (ft_strcmp(name, "export") == 0)
+		return (builtin_export);
+	else if (ft_strcmp(name, "unset") == 0)
+		return (builtin_unset);
+	else
+		return (NULL);
 }
 
 int	get_path(t_cmd *cmd, t_env *env)
 {
 	char	**paths;
-	char	**env_path;
+	char	*env_path;
 	int		i;
 
-	env_path = get_env_path(env, "PATH");
+	env_path = get_env_var(env, "PATH");
 	if (env_path == NULL)
 		return (127);
-	paths = ft_split(env_path, ":");
+	paths = ft_split(env_path, ':');
 	i = 0;
 	while (paths[i] != NULL)
 	{
 		cmd->path = join_path(paths[i], cmd->args->dynamic_str.bytes);
-		if (acces(cmd->path, R_OK | W_OK) == 0)
+		if (access(cmd->path, R_OK | X_OK) == 0)
 		{
-			free_array(cmd->path);
+			free_array(paths);
 			return (0);
 		}
 		free(cmd->path);
 		i++;
 	}
 	free_array(paths);
-	cmd->path == NULL;
+	cmd->path = NULL;
 	return (127);
 }
 
-int	wich_commands(t_cmd *cmds, t_env *env)
+int	which_commands(t_cmd *cmds, t_env *env)
 {
 	int	exit_status;
 
 	while (cmds != NULL)
 	{
 		cmds->builtin = get_builtin(cmds->args->dynamic_str.bytes);
-		if (cmds->args == NULL)
+		if (cmds->builtin == NULL)
 		{
 			if (ft_strchr(cmds->args->dynamic_str.bytes, '/') != NULL)
 			{
-				if (access(cmds->args->dynamic_str.bytes, R_OK | W_OK) != 0)
+				if (access(cmds->args->dynamic_str.bytes, R_OK | X_OK) != 0)
 					return (perror_return("command not found", 126));
 				cmds->path = ft_strdup(cmds->args->dynamic_str.bytes);
 			}

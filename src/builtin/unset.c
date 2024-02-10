@@ -1,20 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exit.c                                             :+:      :+:    :+:   */
+/*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/23 17:22:34 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/02/08 11:30:35 by nagiorgi         ###   ########.fr       */
+/*   Created: 2024/02/10 09:10:25 by nagiorgi          #+#    #+#             */
+/*   Updated: 2024/02/10 09:10:47 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	builtin_exit(char **args, char **env)
+int	builtin_unset(char **args, t_env *env)
 {
-	(void)args;
-	(void)env;
-	exit(0);
+	args++;
+	while (*args)
+	{
+		if (!is_valid_var_name(*args))
+			return (perror_return("invalid var name", 1));
+		remove_env_var(env, *args);
+		args++;
+	}
+	return (0);
 }

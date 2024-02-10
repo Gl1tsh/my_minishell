@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 15:52:13 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/02/07 15:05:43 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/10 09:17:59 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,45 +14,99 @@
 #include <readline/readline.h>
 #include <fcntl.h>
 
-/* 
- * process_heredoc: Traite une redirection de type heredoc.
- * - Crée un fichier temporaire.
- * - Ouvre le fichier en mode écriture.
- * - Lit les lignes de l'entrée standard jusqu'à la fin du heredoc.
- * - Écrit chaque ligne dans le fichier temporaire.
- * - Renvoie 1 si une erreur se produit, sinon 0.
- */
+void	heredoc_signal_handler(int sig_num)
+{
+	(void)sig_num;
+	close(0);
+}
+
+char	*pid_to_str(char *target)
+{
+	int	pid;
+	int	i;
+
+	pid = getpid();
+	i = 0;
+	while (i < 8)
+	{
+		target[i++] = (pid & 0xF) + 'A';
+		pid = pid >> 4;
+	}
+	target[8] = 0;
+	return (target);
+}
+
+int	write_textfile(char *pathname, char *content)
+{
+	int	fd;
+	int	bytes_written;
+	int	len;
+
+	len = ft_strlen(content);
+	fd = open(pathname, O_CREAT | O_TRUNC | O_WRONLY, 0777);
+	if (fd < 0)
+		return (perror_return(NULL, 1));
+	bytes_written = write(fd, content, len);
+	if (close(fd) != 0)
+		return (perror_return(NULL, 1));
+	if (bytes_written != len)
+		return (perror_return(NULL, 1));
+	return (0);
+}
+
+int	read_heredoc(t_dstr *heredoc, char *eos)
+{
+	char	*line;
+	int		stdin_copy;
+
+	stdin_copy = dup(STDIN_FILENO);
+	signal(SIGINT, heredoc_signal_handler);
+	while (1)
+	{
+		line = readline("heredoc> ");
+		if (line == NULL)
+		{
+			redirect(stdin_copy, STDIN_FILENO);
+			signal(SIGINT, parsing_signal_handler);
+			return (1);
+		}
+		if (ft_strcmp(line, eos) == 0)
+			break ;
+		dstr_append(heredoc, line, ft_strlen(line));
+		dstr_append(heredoc, "\n", 1);
+		free(line);
+	}
+	close(stdin_copy);
+	free(line);
+	signal(SIGINT, parsing_signal_handler);
+	return (0);
+}
 
 int	process_heredoc(t_cmd *cmds)
 {
-	char	*line;
-	char	*tmp_file_name;
-	int		tmp_fd;
+	char	temp_filename[9];
+	char	*temp_pathname;
+	char	*temp_dirname;
+	t_dstr	heredoc;
+	int		exit_status;
 
-	tmp_file_name = "bonjour_tmp_file";
+	exit_status = 0;
 	if (cmds->dirin != NULL && cmds->dirin_mode == DIRIN_MODE_HEREDOC)
 	{
-		tmp_fd = open(tmp_file_name, O_TRUNC | O_WRONLY | O_CREAT, 0777);
-		while (1)
+		dstr_allocate(&heredoc, 128);
+		if (read_heredoc(&heredoc, cmds->dirin) != 0)
 		{
-			line = readline("heredoc> ");
-			if (line == NULL)
-				return (1);
-			if (ft_strcmp(line, cmds->dirin) == 0)
-				break ;
-			write(tmp_fd, line, ft_strlen(line));
-			write(tmp_fd, "\n", 1);
-			free(line);
-		}
-		close(tmp_fd);
-		cmds->dirin = tmp_file_name;
-	}
-	cmds = cmds->next;
-	while (cmds != NULL)
-	{
-		if (cmds->dirin != NULL && cmds->dirin_mode == DIRIN_MODE_HEREDOC)
+			dstr_free(&heredoc);
 			return (1);
-		cmds = cmds->next;
+		}
+		temp_dirname = getenv("TMPDIR");
+		if (temp_dirname == NULL)
+			temp_dirname = "/tmp";
+		temp_pathname = join_path(temp_dirname, pid_to_str(temp_filename));
+		exit_status = write_textfile(temp_pathname, heredoc.bytes);
+		free(cmds->dirin);
+		dstr_free(&heredoc);
+		cmds->dirin = temp_pathname;
 	}
-	return (0);
+	return (exit_status);
 }
