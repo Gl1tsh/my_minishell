@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 22:14:42 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/02/10 09:13:54 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/11 14:39:52 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,12 @@ int	set_exit_status(int exit_status, t_env *env)
 {
 	char	*value;
 	char	*var;
+	int		status;
 
-	value = ft_itoa(exit_status);
+	status = exit_status;
+	if (exit_status < 0)
+		status = -exit_status;
+	value = ft_itoa(status);
 	var = ft_strjoin("?=", value);
 	update_env_var(env, var);
 	free(var);
