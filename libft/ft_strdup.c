@@ -30,6 +30,8 @@ char	*ft_strdup(const char *src)
 	size_t	src_length;
 	char	*dest;
 
+	if (src == NULL)
+		return (NULL);
 	src_length = ft_strlen(src);
 	dest = malloc(sizeof(char) * src_length + 1);
 	if (dest == NULL)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strncmp.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nagiorgi <nagiorgi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/07 13:30:54 by nagiorgi          #+#    #+#             */
-/*   Updated: 2023/10/23 16:08:13 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/11 13:55:29 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,12 @@ int	ft_strncmp(const char *s1, char *s2, size_t n)
 	size_t	i;
 
 	i = 0;
+	if (s1 == NULL && s2 == NULL)
+		return (0);
+	if (s1 == NULL)
+		return (-1);
+	if (s2 == NULL)
+		return (1);
 	while (s1[i] && s1[i] == s2[i] && n > 0)
 	{
 		n--;

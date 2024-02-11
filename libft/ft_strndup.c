@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 17:56:56 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/01/24 18:01:36 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/11 13:52:44 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ char	*ft_strndup(const char *src, size_t n)
 	size_t	src_length;
 	char	*dest;
 
+	if (src == NULL)
+		return (NULL);
 	src_length = ft_strlen(src);
 	if (n < src_length)
 		src_length = n;
