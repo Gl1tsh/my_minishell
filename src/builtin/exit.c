@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:34 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/02/11 14:52:38 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/11 16:45:36 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ int	builtin_exit(char **args, t_env *env)
 	int	exit_status;
 
 	(void)env;
+	if (args[1] != NULL && args[2] != NULL)
+		return (perror_return("exit: too many arguments", 1));
 	if (args[1] != NULL)
 	{
 		if (is_only_zero(args[1]))
