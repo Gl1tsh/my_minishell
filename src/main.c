@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:41 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/02/10 09:14:42 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/15 14:14:56 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ void	repl(t_env *env)
 	free(prompt);
 }
 
+
 int	main(int argc, char **argv, char **org_env)
 {
 	t_env	env;
@@ -108,8 +109,8 @@ int	main(int argc, char **argv, char **org_env)
 	signal(SIGQUIT, SIG_IGN);
 	repl(&env);
 	exit_status = ft_atoi(get_env_var(&env, "?"));
-	if (exit_status < 0)
-		exit_status = 0;
 	free_array(env);
+	if (exit_status == 1000)
+		return (0);
 	return (exit_status);
 }
