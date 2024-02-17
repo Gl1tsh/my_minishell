@@ -19,6 +19,10 @@ OBJS2 = $(patsubst src/%.c,$(BUILDDIR)%.o,$(SRCS2))
 # Variable pour stocker si des avertissements ont été générés lors de la compilation
 HAS_WARNINGS :=
 
+# Include the dependency files
+-include $(OBJS1:.o=.d)
+-include $(OBJS2:.o=.d)
+
 # Règle pour compiler un fichier .c en fichier .o
 .c.o:
 	@printf "\r\033[K│ Compiling $<... "
@@ -27,31 +31,33 @@ HAS_WARNINGS :=
 		echo 1 > has_warnings; \
 	fi
 
-# Règle pour compiler un fichier .c en fichier .o dans le répertoire BUILDDIR
+# Règle pour créer les fichiers objets
 ${BUILDDIR}%.o: src/%.c
 	@mkdir -p $(dir $@)
-	@${CC} ${CFLAGS} ${INCLUDES} -c $< -o $@ 2> temp_warnings || (printf "│ Compiling ${CRED}$< = failed${RSET}\n" && cat temp_warnings && printf "├──────────\n├─>>> ${CRED}minishell compiling failed!${RSET}\n└──────────\n" && exit 1)
+	@${CC} ${CFLAGS} ${INCLUDES} -c $< -o $@ 2> temp_warnings && printf "│ Compiling ${CGRN}$< = OK${RSET}\n" || (printf "│ Compiling ${CRED}$< = failed${RSET}\n" && cat temp_warnings && printf "├──────────\n├─>>> ${CRED}minishell compiling failed!${RSET}\n└──────────\n" && exit 1)
 	@if grep -q "warning" temp_warnings; then \
 		printf "│ Compiling ${CVIO}$< = warnings${RSET}\n"; \
 		echo 1 > has_warnings; \
 	else \
-		printf "│ Compiling ${CGRN}$< = OK${RSET}\n"; \
+		printf ""; \
 	fi
 	@cat temp_warnings
 	@rm -f temp_warnings
 
+# Règle par défaut
+all: ${NAME}
+
+${LIBFT}:
+	@if [ ! -f libft/libft.a ]; then \
+		printf "├──────────\n"	; \
+		printf "│ Compiling ${CGRN}libft${RSET}...\n"; \
+		${MAKE} -s -C libft all; \
+		printf "└──────────\n"; \
+	fi
 
 # Règle pour créer l'exécutable
-${NAME}: 
-	@printf "\n"
-	@printf "${CGRN}MINISHELL COMPILING${RSET}\n"
-	@printf "├──────────\n"
-	@printf "│ Compiling ${CGRN}libft${RSET}...\n"
-	@${MAKE} -s -C libft all
-	@printf "├──────────\n"
-	@${MAKE} ${OBJS1}
-	@printf "├──────────\n"
-	@${MAKE} ${OBJS2}
+${NAME}: ${LIBFT} ${OBJS1} ${OBJS2}
+	@${CC} -o ${NAME} ${OBJS1} ${OBJS2} ${LIBFT} ${LDFLAGS}
 	@printf "├──────────\n"
 	@if [ -f has_warnings ]; then \
 		printf "├─>>>${CGRN} minishell compiled ${CVIO}but with warnings!${RSET}\n"; \
@@ -60,28 +66,28 @@ ${NAME}:
 	fi
 	@printf "└──────────\n"
 	@rm -f has_warnings
-	@${CC} -o ${NAME} ${OBJS1} ${OBJS2} ${LIBFT} ${LDFLAGS}
-
-${LIBFT}:
-	@printf "│ Compiling ${CGRN}libft${RSET}...\n"
-	@${MAKE} -C libft all
 
 # Règle pour nettoyer les fichiers objets
 clean:
 	@printf "┌──────────\n"
-	@printf "│\tRemoving ${CRED}${BUILDDIR}${RSET} for ${CYEL}${NAME}${RSET}\n"
+	@printf "│  Removing ${CRED}${BUILDDIR}${RSET} for ${CYEL}${NAME}${RSET} : ${CGRN}OK${RSET}\n"
 	@find ${BUILDDIR} -type f -delete
+	@printf "│  Removing ${CRED}Libft/${RSET} for ${CYEL}${NAME}${RSET} : ${CGRN}OK${RSET}\n"
 	@${MAKE} -C libft clean
+	@printf "│  Removing ${CRED}tmp error files${RSET} for ${CYEL}${NAME}${RSET} : ${CGRN}OK${RSET}\n"
+	@rm -f *~ \#*\# .\#*
+	@printf "├──────────\n"	;
+	@printf "├─>>> Removing status : ${CGRN}Done ${RSET}\n"
+	@printf "└──────────\n"
 
 # Règle pour nettoyer les fichiers objets et l'exécutable
 fclean: clean
 	@if [ -e "./${NAME}" ]; then \
-		printf "│\tRemoving ${CYEL}${NAME}${RSET}\n└──────────\n"; \
 		rm -f ${NAME}; \
 	fi
 	@${MAKE} -C libft fclean
-
-all: ${NAME}
+	@rm -f temp.log
+	@printf "│  Removing ${CYEL}${NAME}${RSET} : ${CGRN}OK${RSET}\n└──────────\n";
 
 # Règle pour recompiler les fichiers objets et l'exécutable
 re:
