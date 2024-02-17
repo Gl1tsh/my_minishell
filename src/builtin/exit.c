@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 17:22:34 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/02/15 14:12:09 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/17 13:08:36 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ int	builtin_exit(char **args, t_env *env)
 	{
 		if (is_only_zero(args[1]))
 			return (-1000);
-
 		exit_status = ft_atoi(args[1]);
 		if (exit_status > 0 && exit_status <= 255)
 			return (-exit_status);
