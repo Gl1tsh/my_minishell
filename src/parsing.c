@@ -6,7 +6,7 @@
 /*   By: nagiorgi <nagiorgi@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 15:47:19 by nagiorgi          #+#    #+#             */
-/*   Updated: 2024/02/10 09:17:37 by nagiorgi         ###   ########.fr       */
+/*   Updated: 2024/02/21 11:12:08 by nagiorgi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ char	*parse_argument(t_arg *arg, char *input, t_env *env)
 	if (*input == '"')
 	{
 		input++;
-		while (*input != '"')
+		while (*input && *input != '"')
 		{
 			if (*input == '$')
 				input = parse_dollar(arg, input + 1, env);
@@ -61,7 +61,7 @@ char	*parse_argument(t_arg *arg, char *input, t_env *env)
 	else if (*input == '\'')
 	{
 		input++;
-		while (*input != '\'')
+		while (*input && *input != '\'')
 			dstr_append(&arg->dynamic_str, input++, 1);
 		return (input + 1);
 	}
